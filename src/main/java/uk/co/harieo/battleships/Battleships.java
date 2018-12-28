@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 
+import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.games.Game;
 import uk.co.harieo.GamesCore.games.GameState;
 import uk.co.harieo.GamesCore.games.GameStore;
@@ -13,6 +14,7 @@ import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.scoreboards.ConstantElement;
 import uk.co.harieo.GamesCore.scoreboards.GameBoard;
+import uk.co.harieo.battleships.listeners.BattleshipsChatModule;
 import uk.co.harieo.battleships.listeners.ConnectionsListener;
 
 public class Battleships extends JavaPlugin implements Game {
@@ -22,11 +24,21 @@ public class Battleships extends JavaPlugin implements Game {
 	private static GameState STATE = GameState.LOBBY;
 	private static int GAME_NUMBER;
 	private GameBoard lobbyScoreboard;
+	private ChatModule chatModule;
 
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
 
+		setupLobbyScoreboard();
+		chatModule = new BattleshipsChatModule(this);
+
+		Bukkit.getPluginManager().registerEvents(new ConnectionsListener(), this);
+
+		GameStore.instance().registerGame(this);
+	}
+
+	private void setupLobbyScoreboard() {
 		lobbyScoreboard = new GameBoard(ChatColor.GOLD + ChatColor.BOLD.toString() + getGameName(),
 				DisplaySlot.SIDEBAR);
 		lobbyScoreboard.addBlankLine();
@@ -45,10 +57,6 @@ public class Battleships extends JavaPlugin implements Game {
 		lobbyScoreboard.addBlankLine();
 		lobbyScoreboard.addLine(
 				new ConstantElement(ChatColor.YELLOW + ChatColor.BOLD.toString() + "patreon.com/harieo"));
-
-		Bukkit.getPluginManager().registerEvents(new ConnectionsListener(), this);
-
-		GameStore.instance().registerGame(this);
 	}
 
 	public GameBoard getLobbyScoreboard() {
@@ -73,6 +81,11 @@ public class Battleships extends JavaPlugin implements Game {
 	@Override
 	public JavaPlugin getPlugin() {
 		return this;
+	}
+
+	@Override
+	public ChatModule chatModule() {
+		return chatModule;
 	}
 
 	@Override
