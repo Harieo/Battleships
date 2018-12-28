@@ -2,4 +2,4 @@ main: uk.co.harieo.battleships.Battleships
 version: 1.0.0
 name: Battleships
 author: Harieo
-api-version: 1.13.2
+api-version: 1.13
