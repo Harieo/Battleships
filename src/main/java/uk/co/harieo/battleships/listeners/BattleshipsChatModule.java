@@ -41,8 +41,8 @@ public class BattleshipsChatModule implements ChatModule {
 							+ ChatColor.WHITE + "and may contain bugs"));
 			player.sendMessage(
 					formatSystemMessage(
-							"If you find any bugs, please report them to Harieo via " + ChatColor.LIGHT_PURPLE
-									+ "Discord"));
+							"If you find any bugs, please report them to Harieo via "
+									+ ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "Discord"));
 		}
 		player.sendMessage("");
 
@@ -56,6 +56,7 @@ public class BattleshipsChatModule implements ChatModule {
 							"We need " + ChatColor.GREEN + (game.getMinimumPlayers() - playerCount) + " more "
 									+ ChatColor.WHITE + "players to start the game..."));
 		}
+		Bukkit.broadcastMessage("");
 	}
 
 }
