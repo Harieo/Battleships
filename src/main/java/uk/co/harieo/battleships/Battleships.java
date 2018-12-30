@@ -7,14 +7,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 
 import net.md_5.bungee.api.ChatColor;
+import uk.co.harieo.FurCore.scoreboards.ConstantElement;
+import uk.co.harieo.FurCore.scoreboards.GameBoard;
 import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.games.Game;
 import uk.co.harieo.GamesCore.games.GameState;
 import uk.co.harieo.GamesCore.games.GameStore;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
-import uk.co.harieo.GamesCore.scoreboards.ConstantElement;
-import uk.co.harieo.GamesCore.scoreboards.GameBoard;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.timers.GameStartTimer;
 import uk.co.harieo.battleships.listeners.BattleshipsChatModule;
