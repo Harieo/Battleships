@@ -1,12 +1,16 @@
 package uk.co.harieo.battleships;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 
 import net.md_5.bungee.api.ChatColor;
+import uk.co.harieo.FurCore.FurCore;
+import uk.co.harieo.FurCore.maps.MapImpl;
 import uk.co.harieo.FurCore.scoreboards.ConstantElement;
 import uk.co.harieo.FurCore.scoreboards.GameBoard;
 import uk.co.harieo.GamesCore.chat.ChatModule;
@@ -19,6 +23,7 @@ import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.timers.GameStartTimer;
 import uk.co.harieo.battleships.listeners.BattleshipsChatModule;
 import uk.co.harieo.battleships.listeners.ConnectionsListener;
+import uk.co.harieo.battleships.listeners.WorldListener;
 
 public class Battleships extends JavaPlugin implements Game {
 
@@ -42,7 +47,16 @@ public class Battleships extends JavaPlugin implements Game {
 		blueTeam = new Team(this, "Blue Team", ChatColor.BLUE);
 		redTeam = new Team(this, "Red Team", ChatColor.RED);
 
-		Bukkit.getPluginManager().registerEvents(new ConnectionsListener(), this);
+		registerListeners(new ConnectionsListener(), new WorldListener());
+
+		MapImpl spawnMap = FurCore.getInstance().getPrimaryWorld();
+		if (spawnMap != null) {
+			World world = spawnMap.getWorld();
+			world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+			world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+			world.setStorm(false); // Just in-case the map was loaded from an external server
+			getLogger().info("Set game rules for spawn world");
+		}
 
 		setupLobbyScoreboard();
 		GameStore.instance().registerGame(this);
@@ -71,7 +85,7 @@ public class Battleships extends JavaPlugin implements Game {
 		lobbyScoreboard.addBlankLine();
 
 		// Time Left section //
-		lobbyScoreboard.addLine(new ConstantElement(ChatColor.YELLOW + ChatColor.BOLD.toString() + "Time to Start"));
+		lobbyScoreboard.addLine(new ConstantElement(ChatColor.GOLD + ChatColor.BOLD.toString() + "Time to Start"));
 		lobbyScoreboard.addLine((Player player) -> {
 			if (Bukkit.getOnlinePlayers().size() < getMinimumPlayers()) {
 				return "Needs " + getMinimumPlayers() + " Players";
@@ -83,6 +97,12 @@ public class Battleships extends JavaPlugin implements Game {
 
 		lobbyScoreboard.addLine(
 				new ConstantElement(ChatColor.YELLOW + ChatColor.BOLD.toString() + "patreon.com/harieo"));
+	}
+
+	private void registerListeners(Listener... listeners) {
+		for (Listener listener : listeners) {
+			Bukkit.getPluginManager().registerEvents(listener, this);
+		}
 	}
 
 	public GameBoard getLobbyScoreboard() {
