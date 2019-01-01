@@ -11,7 +11,6 @@ import uk.co.harieo.FurCore.maps.MapImpl;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.utils.ParsingUtils;
 import uk.co.harieo.battleships.Battleships;
-import uk.co.harieo.battleships.maps.BattleshipsMap.BattleshipsTile;
 
 /**
  * Locations work on the principle that a location is plotted at one edge with an enclosing location at the other edge,

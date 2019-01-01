@@ -22,12 +22,10 @@ import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.timers.GameStartTimer;
-import uk.co.harieo.GamesCore.utils.ParsingUtils;
 import uk.co.harieo.battleships.listeners.BattleshipsChatModule;
 import uk.co.harieo.battleships.listeners.ConnectionsListener;
 import uk.co.harieo.battleships.listeners.MiscListener;
 import uk.co.harieo.battleships.maps.BattleshipsMap;
-import uk.co.harieo.battleships.maps.BattleshipsMap.BattleshipsTile;
 import uk.co.harieo.battleships.maps.MapLoader;
 import uk.co.harieo.battleships.tasks.PreGameTasks;
 
@@ -72,6 +70,9 @@ public class Battleships extends JavaPlugin implements Game {
 			getLogger().info("Set game rules for spawn world");
 
 			map = MapLoader.parseMap(spawnMap); // This should be changed if maps separate in the future
+			if (map.getHighestX() > 9 || map.getHighestY() > 9) {
+				getLogger().severe("Map contains more than 9 of either axis, which will be ignored in the game menu");
+			}
 		}
 
 		setupLobbyScoreboard();
@@ -131,6 +132,10 @@ public class Battleships extends JavaPlugin implements Game {
 
 	public Team getBlueTeam() {
 		return blueTeam;
+	}
+
+	public BattleshipsMap getMap() {
+		return map;
 	}
 
 	@Override
