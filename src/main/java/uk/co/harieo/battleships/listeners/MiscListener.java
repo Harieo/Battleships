@@ -4,12 +4,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.FurCore.ranks.RankCache;
 
-public class WorldListener implements Listener {
+public class MiscListener implements Listener {
 
 	@EventHandler
 	public void onWeatherChange(WeatherChangeEvent event) {
@@ -28,6 +29,11 @@ public class WorldListener implements Listener {
 		if (!RankCache.getCachedInfo(event.getPlayer()).hasPermission(Rank.ADMINISTRATOR)) {
 			event.setCancelled(true);
 		}
+	}
+
+	@EventHandler
+	public void onHungerDiminish(FoodLevelChangeEvent event) {
+		event.setCancelled(true);
 	}
 
 }

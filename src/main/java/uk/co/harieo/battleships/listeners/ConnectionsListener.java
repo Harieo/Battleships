@@ -62,9 +62,10 @@ public class ConnectionsListener implements Listener {
 		Battleships core = Battleships.getInstance();
 		Player player = event.getPlayer();
 		player.setGameMode(GameMode.ADVENTURE);
+		player.setFoodLevel(20);
 
 		if (core.getState() == GameState.LOBBY) {
-			core.getLobbyScoreboard().render(core, event.getPlayer(), 5);
+			core.getLobbyScoreboard().render(core, event.getPlayer(), 1);
 			player.teleport(FurCore.getInstance().getPrimaryWorld().getWorld().getSpawnLocation()); // Set by the core
 		}
 	}

@@ -2,6 +2,7 @@ package uk.co.harieo.battleships;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -21,9 +22,14 @@ import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.timers.GameStartTimer;
+import uk.co.harieo.GamesCore.utils.ParsingUtils;
 import uk.co.harieo.battleships.listeners.BattleshipsChatModule;
 import uk.co.harieo.battleships.listeners.ConnectionsListener;
-import uk.co.harieo.battleships.listeners.WorldListener;
+import uk.co.harieo.battleships.listeners.MiscListener;
+import uk.co.harieo.battleships.maps.BattleshipsMap;
+import uk.co.harieo.battleships.maps.BattleshipsMap.BattleshipsTile;
+import uk.co.harieo.battleships.maps.MapLoader;
+import uk.co.harieo.battleships.tasks.PreGameTasks;
 
 public class Battleships extends JavaPlugin implements Game {
 
@@ -36,6 +42,7 @@ public class Battleships extends JavaPlugin implements Game {
 	private GameStartTimer gameStartTimer;
 	private Team redTeam;
 	private Team blueTeam;
+	private BattleshipsMap map;
 
 	@Override
 	public void onEnable() {
@@ -43,11 +50,18 @@ public class Battleships extends JavaPlugin implements Game {
 
 		gameStartTimer = new GameStartTimer(this, 60, 15);
 		gameStartTimer.beginTimer(); // It will keep ticking but won't progress until players join
+		gameStartTimer.setOnRun(timeLeft -> {
+			if (timeLeft == 30 || timeLeft == 10 || timeLeft < 4) {
+				gameStartTimer.pingTime();
+			}
+		});
+		gameStartTimer.setTimerEndEvent(v -> PreGameTasks.beginPreGame(this)); // The game starts here
+
 		chatModule = new BattleshipsChatModule(this);
 		blueTeam = new Team(this, "Blue Team", ChatColor.BLUE);
 		redTeam = new Team(this, "Red Team", ChatColor.RED);
 
-		registerListeners(new ConnectionsListener(), new WorldListener());
+		registerListeners(new ConnectionsListener(), new MiscListener());
 
 		MapImpl spawnMap = FurCore.getInstance().getPrimaryWorld();
 		if (spawnMap != null) {
@@ -56,6 +70,8 @@ public class Battleships extends JavaPlugin implements Game {
 			world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
 			world.setStorm(false); // Just in-case the map was loaded from an external server
 			getLogger().info("Set game rules for spawn world");
+
+			map = MapLoader.parseMap(spawnMap); // This should be changed if maps separate in the future
 		}
 
 		setupLobbyScoreboard();
@@ -90,7 +106,7 @@ public class Battleships extends JavaPlugin implements Game {
 			if (Bukkit.getOnlinePlayers().size() < getMinimumPlayers()) {
 				return "Needs " + getMinimumPlayers() + " Players";
 			} else {
-				return String.valueOf(gameStartTimer.getTimeLeft());
+				return String.valueOf(gameStartTimer.getTimeLeft() + 1);
 			}
 		});
 		lobbyScoreboard.addBlankLine();
@@ -159,7 +175,7 @@ public class Battleships extends JavaPlugin implements Game {
 
 	@Override
 	public int getMinimumPlayers() {
-		return 4;
+		return 1;
 	}
 
 	@Override
