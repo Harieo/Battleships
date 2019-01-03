@@ -17,6 +17,8 @@ import uk.co.harieo.FurBridge.sql.InfoCore;
 import uk.co.harieo.FurCore.FurCore;
 import uk.co.harieo.GamesCore.games.Game;
 import uk.co.harieo.GamesCore.games.GameState;
+import uk.co.harieo.GamesCore.players.GamePlayer;
+import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.battleships.Battleships;
 
 public class ConnectionsListener implements Listener {
@@ -63,10 +65,14 @@ public class ConnectionsListener implements Listener {
 		Player player = event.getPlayer();
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setFoodLevel(20);
+		player.setAllowFlight(true);
 
 		if (core.getState() == GameState.LOBBY) {
 			core.getLobbyScoreboard().render(core, event.getPlayer(), 1);
 			player.teleport(FurCore.getInstance().getPrimaryWorld().getWorld().getSpawnLocation()); // Set by the core
+		} else {
+			GamePlayer gamePlayer = GamePlayerStore.instance(core).get(player);
+			gamePlayer.setIsPlaying(false); // They are a spectator now
 		}
 	}
 

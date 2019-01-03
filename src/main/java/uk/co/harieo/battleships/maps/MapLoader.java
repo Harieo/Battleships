@@ -21,7 +21,13 @@ public class MapLoader {
 
 	public static BattleshipsMap parseMap(MapImpl map) {
 		Validate.isTrue(map.isValid());
-		BattleshipsMap battleshipsMap = new BattleshipsMap(map);
+		List<Location> rawBlueSpawn = map.getLocations("bluespawn");
+		List<Location> rawRedSpawn = map.getLocations("redspawn");
+		if (rawBlueSpawn.isEmpty() || rawRedSpawn.isEmpty()) {
+			throw new IllegalArgumentException("Map does not contain either 'bluespawn' or 'redspawn' location");
+		}
+
+		BattleshipsMap battleshipsMap = new BattleshipsMap(map, rawBlueSpawn.get(0), rawRedSpawn.get(0));
 
 		// Make a new map so we only scan values that are valid and can remove them when we're done (saving time)
 		Map<Location, String> locations = map.getAllLocations();
@@ -43,7 +49,7 @@ public class MapLoader {
 			for (Location secondLocation : tileLocations.keySet()) {
 				// Make sure not to match the same location to itself
 				if (!location.equals(secondLocation) && firstId.equals(tileLocations.get(secondLocation))
-						&& ParsingUtils.areInline(location, secondLocation)) {
+						&& ParsingUtils.areFarInline(location, secondLocation)) {
 					matchingLocation = secondLocation;
 					break;
 				}
@@ -63,12 +69,10 @@ public class MapLoader {
 						battleshipsMap.addTile(tile);
 					}
 				}
-				locations.remove(matchingLocation);
 			} else {
 				Battleships.getInstance().getLogger()
 						.warning("Couldn't find match for " + ParsingUtils.formStringCoordinate(location));
 			}
-			locations.remove(location);
 		}
 
 		return battleshipsMap;

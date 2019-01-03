@@ -2,7 +2,6 @@ package uk.co.harieo.battleships;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -70,8 +69,8 @@ public class Battleships extends JavaPlugin implements Game {
 			getLogger().info("Set game rules for spawn world");
 
 			map = MapLoader.parseMap(spawnMap); // This should be changed if maps separate in the future
-			if (map.getHighestX() > 9 || map.getHighestY() > 9) {
-				getLogger().severe("Map contains more than 9 of either axis, which will be ignored in the game menu");
+			if (map.getHighestX() > 5 || map.getHighestY() > 5) {
+				getLogger().severe("Map contains more than 5 of either axis, which will cause severe issues with GUIs");
 			}
 		}
 

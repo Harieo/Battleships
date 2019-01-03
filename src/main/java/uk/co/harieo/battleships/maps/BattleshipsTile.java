@@ -3,9 +3,14 @@ package uk.co.harieo.battleships.maps;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.ships.Battleship;
 
+/**
+ * This class represents one single {@link Location} on the board that as a collection made a single {@link Coordinate}.
+ * Therefore, 1 {@link Coordinate} may represent multiple instances of this class but NOT visa versa.
+ */
 public class BattleshipsTile {
 
 	private Location locations;
@@ -13,7 +18,7 @@ public class BattleshipsTile {
 	private char letter;
 	private int number;
 
-	private Player player;
+	private GamePlayer player;
 	private Battleship ship;
 	private boolean isHit = false;
 
@@ -71,7 +76,7 @@ public class BattleshipsTile {
 	/**
 	 * @return the player that owns this tile by having their ship located on it
 	 */
-	public Player getOwningPlayer() {
+	public GamePlayer getOwningPlayer() {
 		return player;
 	}
 
@@ -80,7 +85,7 @@ public class BattleshipsTile {
 	 *
 	 * @param playerUsing to set the value to
 	 */
-	public void setPlayerUsing(Player playerUsing) {
+	public void setPlayerUsing(GamePlayer playerUsing) {
 		this.player = playerUsing;
 	}
 
