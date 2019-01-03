@@ -2,10 +2,12 @@ package uk.co.harieo.battleships.tasks;
 
 import org.bukkit.entity.Player;
 
+import uk.co.harieo.GamesCore.games.Game;
 import uk.co.harieo.GamesCore.games.GameState;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
+import uk.co.harieo.GamesCore.timers.GenericTimer;
 import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.guis.ShipPlacementGUI;
 import uk.co.harieo.battleships.ships.ShipStore;
@@ -31,6 +33,18 @@ public class PreGameTasks {
 			Player player = gamePlayer.toBukkit();
 			player.openInventory(ShipPlacementGUI.get(gamePlayer).getInventory());
 		}
+
+		GenericTimer timer = new GenericTimer(game, 30, end -> {
+			// Randomly place unplaced ships
+			unregisterAllInventories(game);
+			teleportToStart(game);
+		});
+		timer.setOnRun(timeLeft -> {
+			if (timeLeft == 15 || timeLeft <= 5) {
+				timer.pingTime();
+			}
+		});
+		timer.beginTimer();
 	}
 
 	private static void assignTeams(Battleships game, GamePlayerStore store) {
@@ -53,13 +67,31 @@ public class PreGameTasks {
 		}
 	}
 
-	private static void teleportToStart(Battleships game, Player player, Team team) {
-		if (team.equals(game.getBlueTeam())) {
-			player.teleport(game.getMap().getBlueSpawn());
-		} else if (team.equals(game.getRedTeam())) {
-			player.teleport(game.getMap().getRedSpawn());
-		} else {
-			throw new IllegalArgumentException("Passed team in pre-game tasks that was neither blue nor red");
+	private static void teleportToStart(Battleships game) {
+		for (GamePlayer gamePlayer : GamePlayerStore.instance(game).getAll()) {
+			Team team = gamePlayer.getTeam();
+			Player player = gamePlayer.toBukkit();
+
+			if (team.equals(game.getBlueTeam())) {
+				player.teleport(game.getMap().getBlueSpawn());
+			} else if (team.equals(game.getRedTeam())) {
+				player.teleport(game.getMap().getRedSpawn());
+			} else {
+				throw new IllegalArgumentException("Passed team in pre-game tasks that was neither blue nor red");
+			}
+		}
+	}
+
+	private static void unregisterAllInventories(Game game) {
+		for (GamePlayer gamePlayer : GamePlayerStore.instance(game).getAll()) {
+			Player player = gamePlayer.toBukkit();
+			if (player.isOnline()) {
+				player.getOpenInventory().close();
+				player.getInventory().clear();
+			}
+
+			ShipPlacementGUI placementGUI = ShipPlacementGUI.get(gamePlayer);
+			placementGUI.getGui().unregister();
 		}
 	}
 

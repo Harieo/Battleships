@@ -85,6 +85,10 @@ public class ShipPlacementGUI {
 		return team;
 	}
 
+	public boolean isPlaced() {
+		return hasPlaced;
+	}
+
 	public BattleGUI getGui() {
 		return gui;
 	}
