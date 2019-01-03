@@ -35,7 +35,6 @@ public class PreGameTasks {
 		}
 
 		GenericTimer timer = new GenericTimer(game, 30, end -> {
-			// Randomly place unplaced ships
 			unregisterAllInventories(game);
 			teleportToStart(game);
 		});
@@ -91,6 +90,9 @@ public class PreGameTasks {
 			}
 
 			ShipPlacementGUI placementGUI = ShipPlacementGUI.get(gamePlayer);
+			if (!placementGUI.isPlaced()) {
+				placementGUI.randomlyAssign();
+			}
 			placementGUI.getGui().unregister();
 		}
 	}
