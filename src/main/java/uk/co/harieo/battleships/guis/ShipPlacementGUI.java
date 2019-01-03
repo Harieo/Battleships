@@ -63,7 +63,8 @@ public class ShipPlacementGUI {
 					hasPlaced = false;
 					updateAll();
 				}
-			} else if (event.getCurrentItem().getType() == Material.LIGHT_BLUE_TERRACOTTA) {
+			} else if (event.getCurrentItem().getType()
+					== Material.LIGHT_BLUE_TERRACOTTA) { // This is the coordinate grid
 				Coordinate coordinate = gui.getCoordinate(event.getSlot());
 				if (!hasPlaced) {
 					if (gui.canPlaceShip(ship, coordinate, isHorizontal)) {
@@ -85,26 +86,45 @@ public class ShipPlacementGUI {
 		setupButtons();
 	}
 
+	/**
+	 * @return the player this GUI is being displayed to
+	 */
 	public GamePlayer getPlayer() {
 		return player;
 	}
 
+	/**
+	 * @return the team this GUI is based off
+	 */
 	public Team getTeam() {
 		return team;
 	}
 
+	/**
+	 * @return whether this player has placed their ship on the board yet
+	 */
 	public boolean isPlaced() {
 		return hasPlaced;
 	}
 
+	/**
+	 * @return the instance of {@link BattleGUI} that this GUI is displaying on
+	 */
 	public BattleGUI getGui() {
 		return gui;
 	}
 
+	/**
+	 * @return the Bukkit {@link Inventory} this GUI is displaying on
+	 */
 	public Inventory getInventory() {
 		return gui.getInventory();
 	}
 
+	/**
+	 * Updates the button which decides whether the ship is being placed horizontally or vertically based on {@link
+	 * #isHorizontal}
+	 */
 	private void updateAlignmentButton() {
 		ItemStack item = new ItemStack(Material.ARROW);
 		ItemMeta meta = item.getItemMeta();
@@ -118,6 +138,9 @@ public class ShipPlacementGUI {
 		gui.setItem(26, item);
 	}
 
+	/**
+	 * Sets up the instance of {@link BattleGUI} by displaying the team's board
+	 */
 	private void setupGUI() {
 		gui.setFleetItems(); // Sets the board for this player's team
 		Battleship battleship = ShipStore.get(team).getShip(player);
@@ -140,10 +163,13 @@ public class ShipPlacementGUI {
 		}
 	}
 
+	/**
+	 * Sets up the buttons which customise the ship placement for the player
+	 */
 	private void setupButtons() {
 		ItemStack resetButton = new ItemStack(Material.BARRIER);
 		ItemMeta resetMeta = resetButton.getItemMeta();
-		resetMeta.setDisplayName(ChatColor.RED + "Reset Placement");
+		resetMeta.setDisplayName(ChatColor.RED + ChatColor.BOLD.toString() + "Reset Placement");
 		resetMeta.setLore(Arrays.asList("", ChatColor.WHITE + "Resets the position of your ship"));
 		resetButton.setItemMeta(resetMeta);
 		gui.setItem(17, resetButton);
@@ -151,6 +177,9 @@ public class ShipPlacementGUI {
 		updateAlignmentButton();
 	}
 
+	/**
+	 * Randomly puts this player's ship on the first available space on the board
+	 */
 	public void randomlyAssign() {
 		List<Coordinate> coordinates = map.getCoordinates(team);
 		boolean horizontal = true;
@@ -179,6 +208,12 @@ public class ShipPlacementGUI {
 		throw new IllegalStateException("Out of places to put a ship");
 	}
 
+	/**
+	 * Retrieves the {@link ShipPlacementGUI} created for the specified player or instantiates it if none found
+	 *
+	 * @param player to get the instance of
+	 * @return the connected instance of {@link ShipPlacementGUI}
+	 */
 	public static ShipPlacementGUI get(GamePlayer player) {
 		if (CACHE.containsKey(player)) {
 			return CACHE.get(player);
@@ -189,6 +224,9 @@ public class ShipPlacementGUI {
 		}
 	}
 
+	/**
+	 * Updates all the instances of this class and re-sets all their items/displays
+	 */
 	private static void updateAll() {
 		for (ShipPlacementGUI gui : CACHE.values()) {
 			gui.getGui().setFleetItems(); // This will update the ships

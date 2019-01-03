@@ -15,33 +15,40 @@ public class ShipStore {
 	private static Map<Team, ShipStore> CACHE = new HashMap<>();
 
 	private Team team;
-	private boolean isDestroyed = false;
 	private Map<GamePlayer, Battleship> ships = new HashMap<>();
 
 	private ShipStore(Team team) {
 		this.team = team;
 	}
 
+	/**
+	 * @return the team this store is based on
+	 */
 	public Team getTeam() {
 		return team;
 	}
 
+	/**
+	 * Retrieves the {@link Battleship} assigned to a specific player
+	 *
+	 * @param player to find the ship of
+	 * @return the ship assigned to the player or null if no ship is assigned
+	 */
 	public Battleship getShip(GamePlayer player) {
 		return ships.get(player);
 	}
 
+	/**
+	 * @return a list of players and their assigned ships
+	 */
 	public Map<GamePlayer, Battleship> getShips() {
 		return ships;
 	}
 
-	public boolean isDestroyed() {
-		return isDestroyed;
-	}
-
-	public void setDestroyed(boolean isDestroyed) {
-		this.isDestroyed = isDestroyed;
-	}
-
+	/**
+	 * Assigns a {@link Battleship} to all members of the given {@link Team} based on the maximum amount of ships a game
+	 * may have.
+	 */
 	public void assignShips() {
 		ships.clear();
 
@@ -58,6 +65,7 @@ public class ShipStore {
 
 			Player player = gamePlayer.toBukkit();
 			if (player.isOnline()) {
+				player.sendMessage(""); // Blank line for aesthetics
 				ChatModule module = Battleships.getInstance().chatModule();
 				player.sendMessage(module.formatSystemMessage(
 						"You are now commander of the team's " + ChatColor.GOLD + ChatColor.BOLD.toString() + battleship
@@ -65,6 +73,7 @@ public class ShipStore {
 				player.sendMessage(module.formatSystemMessage(
 						"Your ship is " + ChatColor.GREEN + battleship.getSize() + " spaces " + ChatColor.WHITE
 								+ "long"));
+				player.sendMessage(""); // Another blank line
 			}
 
 			if (quantity < battleship.getMaxPerGame()) {
@@ -75,6 +84,12 @@ public class ShipStore {
 		}
 	}
 
+	/**
+	 * Gets an instance of this class for the specified {@link Team} either from the cache or by instantiation
+	 *
+	 * @param team to get the store of
+	 * @return the instance of store
+	 */
 	public static ShipStore get(Team team) {
 		if (CACHE.containsKey(team)) {
 			return CACHE.get(team);

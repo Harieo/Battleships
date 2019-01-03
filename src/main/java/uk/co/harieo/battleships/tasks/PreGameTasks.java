@@ -12,8 +12,17 @@ import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.guis.ShipPlacementGUI;
 import uk.co.harieo.battleships.ships.ShipStore;
 
+/**
+ * A class that handles all pre-game operations before the game begins, starting the entire game process as a whole
+ */
 public class PreGameTasks {
 
+	/**
+	 * Begins the pre-game processes required to progress to the main game then progresses to the main game when
+	 * complete
+	 *
+	 * @param game instance that this game is running based on
+	 */
 	public static void beginPreGame(Battleships game) {
 		game.getLogger().info("Starting pre-game tasks");
 		game.setState(GameState.PRE_GAME);
@@ -32,12 +41,15 @@ public class PreGameTasks {
 		for (GamePlayer gamePlayer : playerStore.getAll()) {
 			Player player = gamePlayer.toBukkit();
 			player.openInventory(ShipPlacementGUI.get(gamePlayer).getInventory());
+			game.getLobbyScoreboard().cancelScoreboard(player);
 		}
 
 		GenericTimer timer = new GenericTimer(game, 30, end -> {
 			unregisterAllInventories(game);
 			teleportToStart(game);
+			InGameTasks.beginInGameTasks(game);
 		});
+
 		timer.setOnRun(timeLeft -> {
 			if (timeLeft == 15 || timeLeft <= 5) {
 				timer.pingTime();
@@ -46,11 +58,18 @@ public class PreGameTasks {
 		timer.beginTimer();
 	}
 
+	/**
+	 * Assigns a {@link Team} to all players who do not already have a team
+	 *
+	 * @param game instance that this game is running on
+	 * @param store of players to assign teams to
+	 */
 	private static void assignTeams(Battleships game, GamePlayerStore store) {
 		Team team = game.getBlueTeam();
 		for (GamePlayer player : store.getAll()) {
 			if (player.isPlaying()) {
 				if (!player.hasTeam()) { // They have no team so they need one
+					player.toBukkit().sendMessage(""); // Blank line for aesthetics
 					team.addTeamMember(player);
 					player.toBukkit().sendMessage(game.chatModule()
 							.formatSystemMessage("You have been assigned to the " + team.getFormattedName()));
@@ -66,6 +85,11 @@ public class PreGameTasks {
 		}
 	}
 
+	/**
+	 * Teleports all players to their starting positions based on their assigned {@link Team}
+	 *
+	 * @param game instance that this game is running on
+	 */
 	private static void teleportToStart(Battleships game) {
 		for (GamePlayer gamePlayer : GamePlayerStore.instance(game).getAll()) {
 			Team team = gamePlayer.getTeam();
@@ -81,6 +105,11 @@ public class PreGameTasks {
 		}
 	}
 
+	/**
+	 * Closes, unregisters and forcefully completes any user controlled GUIs that are currently open
+	 *
+	 * @param game instance that this game is running on
+	 */
 	private static void unregisterAllInventories(Game game) {
 		for (GamePlayer gamePlayer : GamePlayerStore.instance(game).getAll()) {
 			Player player = gamePlayer.toBukkit();

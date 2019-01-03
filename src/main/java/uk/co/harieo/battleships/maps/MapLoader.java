@@ -18,6 +18,13 @@ import uk.co.harieo.battleships.Battleships;
  */
 public class MapLoader {
 
+	/**
+	 * Parses a map to get all values required for a game of Battleships, storing them in an instance of {@link
+	 * BattleshipsMap}
+	 *
+	 * @param map that this game is to be played on
+	 * @return the instance of {@link BattleshipsMap} with the data retrieved
+	 */
 	public static BattleshipsMap parseMap(MapImpl map) {
 		Validate.isTrue(map.isValid());
 		List<Location> rawBlueSpawn = map.getLocations("bluespawn");
@@ -77,6 +84,12 @@ public class MapLoader {
 		return battleshipsMap;
 	}
 
+	/**
+	 * Parses a {@link Team} based of the String id associated with a location
+	 *
+	 * @param id to parse
+	 * @return the given team or null if the String does not contain a team
+	 */
 	private static Team parseTeam(String id) {
 		String[] split = id.split(":");
 		if (split.length > 0) {
@@ -87,6 +100,12 @@ public class MapLoader {
 		}
 	}
 
+	/**
+	 * Sets the number or letter value of a {@link BattleshipsTile} based on whichever the given location id contains
+	 *
+	 * @param splitId of the location id containing the letter or number
+	 * @param tile to set the value of
+	 */
 	private static void setTileValues(String[] splitId, BattleshipsTile tile) {
 		if (ParsingUtils.isInteger(splitId[1])) {
 			tile.setNumber(Integer.parseInt(splitId[1]));
