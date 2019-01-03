@@ -1,7 +1,6 @@
 package uk.co.harieo.battleships.maps;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.teams.Team;

@@ -1,13 +1,10 @@
 package uk.co.harieo.battleships.guis;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +13,6 @@ import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.Battleships;
-import uk.co.harieo.battleships.maps.BattleshipsMap;
 import uk.co.harieo.battleships.maps.Coordinate;
 import uk.co.harieo.battleships.ships.Battleship;
 import uk.co.harieo.battleships.ships.ShipStore;
@@ -133,7 +129,6 @@ public class ShipPlacementGUI {
 	}
 
 	private void setupButtons() {
-		// Add reset and confirm
 		ItemStack resetButton = new ItemStack(Material.BARRIER);
 		ItemMeta resetMeta = resetButton.getItemMeta();
 		resetMeta.setDisplayName(ChatColor.RED + "Reset Placement");

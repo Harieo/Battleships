@@ -1,6 +1,5 @@
 package uk.co.harieo.battleships.maps;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.HashMap;
