@@ -15,6 +15,12 @@ import uk.co.harieo.battleships.Battleships;
  * Locations work on the principle that a location is plotted at one edge with an enclosing location at the other edge,
  * of which both locations are on the same Z or X value on a straight line (allowing them to be connected) within 50
  * blocks
+ *
+ * All location ids should be formatted as [team]:[coordinate value] and should be in a perfect straight line with
+ * another identical id to form a row or column of tiles. For example, a sign at X:10,Z:10 with blue:a and a sign at
+ * X:10,Z:20 with blue:a would form 10 tiles on the Z axis with the values of team Blue and letter a. To get the full
+ * coordinate, a row and a column must contain both one letter row/column and one number row/column overlapping the
+ * tile.
  */
 public class MapLoader {
 
