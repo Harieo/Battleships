@@ -54,7 +54,7 @@ public class Battleships extends JavaPlugin implements Game {
 		});
 		gameStartTimer.setTimerEndEvent(v -> PreGameTasks.beginPreGame(this)); // The game starts here
 
-		chatModule = new BattleshipsChatModule(this);
+		chatModule = new BattleshipsChatModule();
 		blueTeam = new Team(this, "Blue Team", ChatColor.BLUE);
 		redTeam = new Team(this, "Red Team", ChatColor.RED);
 

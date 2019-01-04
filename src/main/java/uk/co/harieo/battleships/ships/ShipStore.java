@@ -16,6 +16,7 @@ public class ShipStore {
 
 	private Team team;
 	private Map<GamePlayer, Battleship> ships = new HashMap<>();
+	private Map<GamePlayer, Boolean> destroyed = new HashMap<>();
 
 	private ShipStore(Team team) {
 		this.team = team;
@@ -26,6 +27,39 @@ public class ShipStore {
 	 */
 	public Team getTeam() {
 		return team;
+	}
+
+	/**
+	 * Whether the ship assigned to this player has been destroyed
+	 *
+	 * @param player to check the ship of
+	 * @return whether this player is destroyed
+	 */
+	public boolean isDestroyed(GamePlayer player) {
+		return destroyed.get(player);
+	}
+
+	/**
+	 * Sets whether the ship assigned to this player has been destroyed
+	 *
+	 * @param player to assign the value to
+	 * @param isDestroyed whether this player has been destroyed
+	 */
+	public void setDestroyed(GamePlayer player, boolean isDestroyed) {
+		destroyed.replace(player, isDestroyed);
+	}
+
+	/**
+	 * @return how many ships have not been destroyed yet
+	 */
+	public int getShipsRemaining() {
+		int remaining = 0;
+		for (GamePlayer player : destroyed.keySet()) {
+			if (!destroyed.get(player)) {
+				remaining++;
+			}
+		}
+		return remaining;
 	}
 
 	/**
@@ -62,6 +96,7 @@ public class ShipStore {
 
 			Battleship battleship = Battleship.values()[i];
 			ships.put(gamePlayer, battleship);
+			destroyed.put(gamePlayer, false);
 
 			Player player = gamePlayer.toBukkit();
 			if (player.isOnline()) {

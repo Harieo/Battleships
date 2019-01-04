@@ -2,9 +2,6 @@ package uk.co.harieo.battleships.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import net.md_5.bungee.api.ChatColor;
 import uk.co.harieo.GamesCore.chat.ChatModule;
@@ -13,10 +10,6 @@ import uk.co.harieo.battleships.Battleships;
 
 public class BattleshipsChatModule implements ChatModule {
 
-	public BattleshipsChatModule(JavaPlugin plugin) {
-		Bukkit.getPluginManager().registerEvents(this, plugin);
-	}
-
 	@Override
 	public String getPrefix() {
 		// Alt 175 is for »
@@ -24,11 +17,8 @@ public class BattleshipsChatModule implements ChatModule {
 	}
 
 	@Override
-	@EventHandler
-	public void announcePlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
+	public void announcePlayerJoin(Player player) {
 		Game game = Battleships.getInstance();
-		event.setJoinMessage(null);
 
 		player.sendMessage("");
 		player.sendMessage(formatSystemMessage(
@@ -57,6 +47,13 @@ public class BattleshipsChatModule implements ChatModule {
 									+ ChatColor.WHITE + "players to start the game..."));
 		}
 		Bukkit.broadcastMessage("");
+	}
+
+	public void announcePlayerLeave(Player player) {
+		Game game = Battleships.getInstance();
+
+		game.chatModule()
+				.formatSystemMessage(ChatColor.GREEN + player.getName() + ChatColor.WHITE + " has left the game");
 	}
 
 }
