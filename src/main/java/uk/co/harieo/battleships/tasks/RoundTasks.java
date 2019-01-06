@@ -27,6 +27,11 @@ public class RoundTasks {
 
 	private Team currentlyPlaying;
 
+	/**
+	 * A task manager for handling rounds in the game
+	 *
+	 * @param game that is running
+	 */
 	RoundTasks(Battleships game) {
 		this.game = game;
 		this.blueGUI = new BattleGUI(game.getRedTeam(), game.getMap(), false); // Show blue team red board
@@ -35,6 +40,9 @@ public class RoundTasks {
 		progressRound();
 	}
 
+	/**
+	 * Increments the round, refreshing voting and GUIs with new instances then calls {@link #handleRound()}
+	 */
 	private void progressRound() {
 		round++;
 		blueGUI.setFleetItems();
@@ -45,6 +53,9 @@ public class RoundTasks {
 		handleRound();
 	}
 
+	/**
+	 * Handles voting for each round
+	 */
 	private void handleRound() {
 		ChatModule module = game.chatModule();
 		Bukkit.broadcastMessage("");
@@ -68,6 +79,12 @@ public class RoundTasks {
 		}
 	}
 
+	/**
+	 * Handles the results of a {@link CoordinateVote} and announces the result of the shot
+	 *
+	 * @param team that was voting
+	 * @param coordinate that was voted for
+	 */
 	public void endShotVote(Team team, Coordinate coordinate) {
 		ChatModule module = game.chatModule();
 		Bukkit.broadcastMessage(module.formatSystemMessage(

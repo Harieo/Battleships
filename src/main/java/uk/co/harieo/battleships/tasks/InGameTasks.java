@@ -17,6 +17,11 @@ class InGameTasks {
 
 	private static GameBoard scoreboard;
 
+	/**
+	 * Begins all tasks related to primary game functions, using {@link RoundTasks} as the task manager
+	 *
+	 * @param game that this game is based off
+	 */
 	static void beginInGameTasks(Battleships game) {
 		game.getLogger().info("Starting the in-game processes");
 		game.setState(GameState.IN_GAME);
@@ -31,6 +36,11 @@ class InGameTasks {
 		Bukkit.getScheduler().runTaskLater(game, bukkitTask -> new RoundTasks(game), 20 * 3);
 	}
 
+	/**
+	 * Sets all the values of the in-game scoreboards
+	 *
+	 * @param game that this game is running from
+	 */
 	private static void setupScoreboard(Battleships game) {
 		scoreboard.addBlankLine();
 

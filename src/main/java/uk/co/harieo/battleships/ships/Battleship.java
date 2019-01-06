@@ -14,6 +14,14 @@ public enum Battleship {
 	private int max;
 	private ChatColor chatColor;
 
+	/**
+	 * A ship holding values for use in-game
+	 *
+	 * @param name of the ship to be displayed to players
+	 * @param size of the ship (how many squares it takes up)
+	 * @param maxPerGame how many of this ship may be present in 1 game
+	 * @param chatColor to be applied to the name to create {@link #getFormattedName()}
+	 */
 	Battleship(String name, int size, int maxPerGame, ChatColor chatColor) {
 		this.name = name;
 		this.size = size;

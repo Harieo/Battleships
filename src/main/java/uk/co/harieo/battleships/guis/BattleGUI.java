@@ -28,6 +28,13 @@ public class BattleGUI extends GUI {
 	private Consumer<InventoryClickEvent> onClick;
 	private Consumer<InventoryCloseEvent> onClose;
 
+	/**
+	 * An extension of {@link GUI} that shows all the ships on one team's side of the board by {@link Coordinate}
+	 *
+	 * @param displayTeam to show the board of
+	 * @param map that the {@link Coordinate} will be based on
+	 * @param showShips whether to show where the ships are on this side of the board
+	 */
 	public BattleGUI(Team displayTeam, BattleshipsMap map, boolean showShips) {
 		super(displayTeam.getFormattedName() + "'s Board",
 				(map.getHighestY() >= 5 ? map.getHighestY() : 5)); // Y axis will be the one going down each row
@@ -44,6 +51,11 @@ public class BattleGUI extends GUI {
 		}
 	}
 
+	/**
+	 * Sets a function to occur when an item in this GUI is clicked
+	 *
+	 * @param onClick the event consumer
+	 */
 	public void setOnClick(Consumer<InventoryClickEvent> onClick) {
 		this.onClick = onClick;
 	}
@@ -55,14 +67,26 @@ public class BattleGUI extends GUI {
 		}
 	}
 
+	/**
+	 * Sets a function to occur when the inventory is closed
+	 *
+	 * @param onClose the event consumer
+	 */
 	public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
 		this.onClose = onClose;
 	}
 
+	/**
+	 * @return which team this GUI is displaying
+	 */
 	public Team getDisplayTeam() {
 		return displayTeam;
 	}
 
+	/**
+	 * Sets all {@link Coordinate} spaces belonging to the {@link #getDisplayTeam()} by getting the item from {@link
+	 * #createItem(Coordinate)}
+	 */
 	public void setFleetItems() {
 		getInventory().clear();
 		List<Coordinate> coordinates = map.getCoordinates(displayTeam);
@@ -71,6 +95,14 @@ public class BattleGUI extends GUI {
 		}
 	}
 
+	/**
+	 * Creates a generic item showing who owns the {@link Coordinate} and whether the {@link Coordinate} is hit, missed
+	 * or not hit. If {@link #showShips} is true, it will create a special item for any {@link Coordinate} that a ship
+	 * is placed on.
+	 *
+	 * @param coordinate to create an item for
+	 * @return the created item
+	 */
 	public ItemStack createItem(Coordinate coordinate) {
 		ItemStack item = new ItemStack(Material.LIGHT_BLUE_TERRACOTTA);
 		ItemMeta meta = item.getItemMeta();
@@ -106,7 +138,12 @@ public class BattleGUI extends GUI {
 		return item;
 	}
 
-	// char 'a' is 97
+	/**
+	 * Gets the slot that a {@link Coordinate} should be placed in
+	 *
+	 * @param coordinate to get the slot for
+	 * @return the slot that the given Coordinate should go into
+	 */
 	public int getSlot(Coordinate coordinate) {
 		int slot = 0;
 		slot += coordinate.getNumber() - 1; // Representing the X value -1 to bring down to 0
@@ -116,16 +153,38 @@ public class BattleGUI extends GUI {
 		return slot;
 	}
 
+	/**
+	 * Retrieves the {@link Coordinate} that would go into {@link #getSlot(Coordinate)} to get the given slot
+	 *
+	 * @param slot to get the Coordinate of
+	 * @return the attached Coordinate or null if the Coordinate has no slot in this GUI
+	 */
 	public Coordinate getCoordinate(int slot) {
 		return coordinates.get(slot);
 	}
 
+	/**
+	 * Whether an entire {@link Battleship} can be placed on the given {@link Coordinate} assuming that the {@link
+	 * Coordinate} given is the center of the ship
+	 *
+	 * @param ship to be placed
+	 * @param centralCoordinate center of the ship
+	 * @param isHorizontal whether the ship is being placed horizontally or vertically
+	 */
 	boolean canPlaceShip(Battleship ship, Coordinate centralCoordinate, boolean isHorizontal) {
 		// The list of coordinates will exclude invalid coordinates meaning if an invalid coordinate was excluded,
 		// the size would differ from list to ship
 		return getCoordinateSpread(ship, centralCoordinate, isHorizontal).size() == ship.getSize();
 	}
 
+	/**
+	 * Updates all tiles attached to all {@link Coordinate}s to show that a ship is placed on it. This method will
+	 * do nothing if {@link #canPlaceShip(Battleship, Coordinate, boolean)} returns false with the given values.
+	 *
+	 * @param player that this ship belongs to
+	 * @param centralCoordinate center of the ship
+	 * @param isHorizontal whether this ship is being placed horizontally or vertically
+	 */
 	void placeShip(GamePlayer player, Coordinate centralCoordinate, boolean isHorizontal) {
 		Battleship ship = ShipStore.get(player.getTeam()).getShip(player);
 		if (canPlaceShip(ship, centralCoordinate, isHorizontal)) {
@@ -136,6 +195,16 @@ public class BattleGUI extends GUI {
 		}
 	}
 
+	/**
+	 * Gets a list of {@link Coordinate} that the ship will be placed on, excluding invalid values that are already
+	 * owned by another. By this logic, if the given list is of a size lower then the size of your {@link Battleship}
+	 * then one slot on it's spread was invalid.
+	 *
+	 * @param ship that you wish to place
+	 * @param centralCoordinate of the location you're placing it
+	 * @param isHorizontal whether you're placing it horizontally or vertically
+	 * @return the list of coordinate from the center that the ship can be placed on
+	 */
 	private List<Coordinate> getCoordinateSpread(Battleship ship, Coordinate centralCoordinate, boolean isHorizontal) {
 		List<Coordinate> list = new ArrayList<>();
 		list.add(centralCoordinate); // This is included in the spread

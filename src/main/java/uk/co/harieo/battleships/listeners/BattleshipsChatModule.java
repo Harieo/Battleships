@@ -16,6 +16,11 @@ public class BattleshipsChatModule implements ChatModule {
 		return ChatColor.GOLD + ChatColor.BOLD.toString() + "Battleships " + ChatColor.DARK_GRAY + "»";
 	}
 
+	/**
+	 * Sends a broadcast announcing that a player has joined and gives that player messages about the server
+	 *
+	 * @param player to announce the join of
+	 */
 	@Override
 	public void announcePlayerJoin(Player player) {
 		Game game = Battleships.getInstance();
@@ -49,6 +54,11 @@ public class BattleshipsChatModule implements ChatModule {
 		Bukkit.broadcastMessage("");
 	}
 
+	/**
+	 * Announces a player leaving the game
+	 *
+	 * @param player that is leaving
+	 */
 	public void announcePlayerLeave(Player player) {
 		Game game = Battleships.getInstance();
 

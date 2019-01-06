@@ -19,7 +19,7 @@ import uk.co.harieo.battleships.maps.BattleshipsMap;
 import uk.co.harieo.battleships.maps.Coordinate;
 import uk.co.harieo.battleships.tasks.RoundTasks;
 
-public class CoordinateVote implements Vote {
+public class CoordinateVote {
 
 	private Map<Coordinate, Integer> votes = new HashMap<>();
 	private Map<Player, Coordinate> playerVotes = new HashMap<>();
@@ -30,10 +30,18 @@ public class CoordinateVote implements Vote {
 	private GenericTimer timer;
 	private Team team;
 
-	private boolean isOpen = true;
+	private boolean isOpen = false;
 	private Random random = new Random();
 	private Coordinate mostPopularCoordinate;
 
+	/**
+	 * Converts a {@link BattleGUI} into a vote for which {@link Coordinate} a team wishes to shoot at
+	 *
+	 * @param tasks to report the vote results to
+	 * @param game that this vote is running for
+	 * @param gui that should be converted into a vote
+	 * @param team that is voting (not the team that is being shot at)
+	 */
 	public CoordinateVote(RoundTasks tasks, Battleships game, BattleGUI gui, Team team) {
 		this.tasks = tasks;
 		this.game = game;
@@ -55,7 +63,7 @@ public class CoordinateVote implements Vote {
 			Player player = (Player) event.getWhoClicked();
 			ChatModule module = game.chatModule();
 
-			if (!isOpen) {
+			if (!isOpen) { // Prevents voting passed allotted time should it ever become possible
 				player.sendMessage(module.formatSystemMessage(
 						ChatColor.RED + "Time for voting is over, the time for shooting is at hand"));
 				return;
@@ -100,10 +108,17 @@ public class CoordinateVote implements Vote {
 		});
 	}
 
+	/**
+	 * Begins the timer for this vote
+	 */
 	public void beginVote() {
+		isOpen = true; // Opens the vote
 		timer.beginTimer();
 	}
 
+	/**
+	 * Ends this vote and submits the results to the round task manager
+	 */
 	private void endVote() {
 		this.isOpen = false;
 		for (GamePlayer gamePlayer : team.getTeamMembers()) {
@@ -147,6 +162,12 @@ public class CoordinateVote implements Vote {
 		return highestCoordinate;
 	}
 
+	/**
+	 * Creates an item that shows a specified {@link Coordinate} as the most popular voting target
+	 *
+	 * @param coordinate to create the item for
+	 * @return the created item
+	 */
 	private ItemStack createTargetItem(Coordinate coordinate) {
 		ItemStack item = new ItemStack(Material.YELLOW_TERRACOTTA);
 		ItemMeta meta = item.getItemMeta();
@@ -159,18 +180,11 @@ public class CoordinateVote implements Vote {
 		return item;
 	}
 
+	/**
+	 * @return the timer counting down for this vote
+	 */
 	public GenericTimer getTimer() {
 		return timer;
-	}
-
-	@Override
-	public boolean canPlayerVote(Player player) {
-		return isOpen;
-	}
-
-	@Override
-	public boolean isVotingOpen() {
-		return isOpen;
 	}
 
 }
