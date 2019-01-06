@@ -2,6 +2,7 @@ package uk.co.harieo.battleships.tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -13,12 +14,13 @@ import uk.co.harieo.battleships.animation.ShootingAnimation;
 import uk.co.harieo.battleships.guis.BattleGUI;
 import uk.co.harieo.battleships.maps.BattleshipsMap;
 import uk.co.harieo.battleships.maps.Coordinate;
+import uk.co.harieo.battleships.ships.Battleship;
+import uk.co.harieo.battleships.ships.ShipStore;
 import uk.co.harieo.battleships.votes.CoordinateVote;
 
 public class RoundTasks {
 
 	private Battleships game;
-	private int round = 0;
 
 	private BattleGUI blueGUI;
 	private CoordinateVote blueVote;
@@ -44,12 +46,12 @@ public class RoundTasks {
 	 * Increments the round, refreshing voting and GUIs with new instances then calls {@link #handleRound()}
 	 */
 	private void progressRound() {
-		round++;
 		blueGUI.setFleetItems();
 		blueVote = new CoordinateVote(this, game, blueGUI, game.getBlueTeam());
 		redGUI.setFleetItems();
 		redVote = new CoordinateVote(this, game, redGUI, game.getRedTeam());
 
+		this.currentlyPlaying = game.getBlueTeam();
 		handleRound();
 	}
 
@@ -94,10 +96,26 @@ public class RoundTasks {
 		new ShootingAnimation(game, coordinate).setOnEnd(end -> {
 			BattleshipsMap map = game.getMap();
 			String message;
+
+			map.updateTileIsHit(true, coordinate); // Make sure this coordinate can't be hit again
 			if (map.getShip(coordinate) != null) {
 				message = ChatColor.GREEN + "Direct hit! " + ChatColor.WHITE + "The " + currentlyPlaying
 						.getFormattedName() + ChatColor.WHITE + " hit an enemy ship!";
 				currentlyPlaying.addScore(1); // Every hit is +1 score
+
+				if (ShipStore.get(coordinate.getTeam()).checkIfDestroyed(coordinate)) {
+					// The ship here was destroyed meaning it has to have an owner and a ship
+					GamePlayer gamePlayer = map.getOwningPlayer(coordinate);
+					for (Player player : Bukkit.getOnlinePlayers()) {
+						player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
+					}
+
+					Bukkit.broadcastMessage("");
+					Bukkit.broadcastMessage(module.formatSystemMessage(
+							ChatColor.RED + "A thunderous explosion sounds! " + ChatColor.WHITE + "It appears "
+									+ ChatColor.GREEN + gamePlayer.toBukkit().getName()
+									+ "'s " + ChatColor.WHITE + "ship has been destroyed!"));
+				}
 			} else {
 				message = ChatColor.RED + "That made a big splash! " + ChatColor.WHITE + "The " + currentlyPlaying
 						.getFormattedName() + ChatColor.WHITE + " missed their shot!";
@@ -107,7 +125,9 @@ public class RoundTasks {
 			Bukkit.broadcastMessage(module.formatSystemMessage(message));
 			Bukkit.broadcastMessage("");
 
-			map.updateTileIsHit(true, coordinate); // Make sure this coordinate can't be hit again
+			if (InGameTasks.checkWinConditions(game)) {
+				return; // Halt the sequence, the game is over
+			}
 
 			BukkitScheduler scheduler = Bukkit.getScheduler();
 			if (currentlyPlaying.equals(game.getRedTeam())) { // Red team goes last so the round progresses here

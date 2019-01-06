@@ -21,7 +21,7 @@ import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.timers.GameStartTimer;
-import uk.co.harieo.battleships.listeners.BattleshipsChatModule;
+import uk.co.harieo.battleships.listeners.ChatListener;
 import uk.co.harieo.battleships.listeners.ConnectionsListener;
 import uk.co.harieo.battleships.listeners.MiscListener;
 import uk.co.harieo.battleships.maps.BattleshipsMap;
@@ -63,7 +63,7 @@ public class Battleships extends JavaPlugin implements Game {
 		blueTeam = new Team(this, "Blue Team", ChatColor.BLUE);
 		redTeam = new Team(this, "Red Team", ChatColor.RED);
 
-		registerListeners(new ConnectionsListener(), new MiscListener());
+		registerListeners(new ConnectionsListener(), new MiscListener(), new ChatListener());
 
 		MapImpl spawnMap = FurCore.getInstance().getPrimaryWorld();
 		if (spawnMap != null) {

@@ -4,10 +4,10 @@ import org.bukkit.ChatColor;
 
 public enum Battleship {
 
-	FRIGATE("Frigate", 2, 2, ChatColor.YELLOW),
-	CRUISER("Cruiser", 3, ChatColor.GOLD),
+	AIRCRAFT_CARRIER("Aircraft Carrier", 5, ChatColor.RED),
 	DREADNOUGHT("Dreadnought", 4, ChatColor.LIGHT_PURPLE),
-	AIRCRAFT_CARRIER("Aircraft Carrier", 5, ChatColor.RED);
+	CRUISER("Cruiser", 3, ChatColor.GOLD),
+	FRIGATE("Frigate", 2, 2, ChatColor.YELLOW);
 
 	private String name;
 	private int size;

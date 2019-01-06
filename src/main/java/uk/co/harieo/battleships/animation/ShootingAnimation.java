@@ -75,20 +75,18 @@ public class ShootingAnimation {
 	 * This stage shows the explosion of the coordinate and sets the block accordingly. This is the final stage.
 	 */
 	private void stageTwo() {
-		Random random = new Random();
-
 		stageTwoTiles.forEach(tile -> {
 			Location location = tile.getLocation();
 			World world = location.getWorld();
 
 			if (game.getMap().getShip(coordinate) != null) { // We're about to hit a ship, simulate explosion
 				world.createExplosion(location.getX(), location.getY() + 1, location.getZ(), 3F, false, false);
+				location.getBlock().setType(Material.BLACK_STAINED_GLASS);
 			} else {
 				world.spawnParticle(Particle.WATER_SPLASH, tile.getLocation().clone().add(0.25, 1, 0.75), 100, 2, 5, 2);
 				world.playSound(location, Sound.ENTITY_BOAT_PADDLE_WATER, 1, 1);
+				location.getBlock().setType(Material.YELLOW_STAINED_GLASS);
 			}
-
-			location.getBlock().setType(Material.YELLOW_STAINED_GLASS);
 		});
 
 		if (onEnd != null) {

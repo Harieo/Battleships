@@ -1,5 +1,6 @@
 package uk.co.harieo.battleships.guis;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -38,10 +39,12 @@ public class BattleGUI extends GUI {
 	public BattleGUI(Team displayTeam, BattleshipsMap map, boolean showShips) {
 		super(displayTeam.getFormattedName() + "'s Board",
 				(map.getHighestY() >= 5 ? map.getHighestY() : 5)); // Y axis will be the one going down each row
-
 		this.displayTeam = displayTeam;
 		this.map = map;
 		this.showShips = showShips;
+		for (Coordinate coordinate : map.getCoordinates(displayTeam)) {
+			getSlot(coordinate); // This loads the coordinate into the cache
+		}
 	}
 
 	@Override
@@ -149,7 +152,9 @@ public class BattleGUI extends GUI {
 		slot += coordinate.getNumber() - 1; // Representing the X value -1 to bring down to 0
 		slot += (((int) coordinate.getLetter()) - 96) * 9; // Representing the Y value in lower case
 		slot -= 9; // Take away 9 to bring back to zero index from Y value
-		coordinates.put(slot, coordinate);
+		if (!coordinates.containsKey(slot)) {
+			coordinates.put(slot, coordinate);
+		}
 		return slot;
 	}
 
@@ -178,8 +183,8 @@ public class BattleGUI extends GUI {
 	}
 
 	/**
-	 * Updates all tiles attached to all {@link Coordinate}s to show that a ship is placed on it. This method will
-	 * do nothing if {@link #canPlaceShip(Battleship, Coordinate, boolean)} returns false with the given values.
+	 * Updates all tiles attached to all {@link Coordinate}s to show that a ship is placed on it. This method will do
+	 * nothing if {@link #canPlaceShip(Battleship, Coordinate, boolean)} returns false with the given values.
 	 *
 	 * @param player that this ship belongs to
 	 * @param centralCoordinate center of the ship
@@ -210,7 +215,7 @@ public class BattleGUI extends GUI {
 		list.add(centralCoordinate); // This is included in the spread
 
 		boolean goHigher = true;
-		for (int i = 1; i < ship.getSize(); i++) {
+		for (int i = 1; i < ship.getSize(); ) {
 			int slot;
 			if (goHigher) {
 				if (isHorizontal) {
@@ -220,19 +225,21 @@ public class BattleGUI extends GUI {
 				}
 			} else {
 				if (isHorizontal) {
-					slot = getSlot(centralCoordinate) - (i - 1);
+					slot = getSlot(centralCoordinate) - (i);
 				} else {
-					slot = getSlot(centralCoordinate) - ((i - 1) * 9);
+					slot = getSlot(centralCoordinate) - (i * 9);
 				}
+				i++;
 			}
 
-			if (!map.isApplicableCoordinate(displayTeam, getCoordinate(slot)) || slot < 0
+			goHigher = !goHigher; // This creates an effect that makes the central coordinate central
+
+			if (getCoordinate(slot) == null || !map.isApplicableCoordinate(displayTeam, getCoordinate(slot)) || slot < 0
 					|| slot >= getInventory().getSize() || map.getOwningPlayer(getCoordinate(slot)) != null) {
 				continue;
 			}
 
 			list.add(getCoordinate(slot));
-			goHigher = !goHigher; // This creates an effect that makes the central coordinate central
 		}
 
 		return list;

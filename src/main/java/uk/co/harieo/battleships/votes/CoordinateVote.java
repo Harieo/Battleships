@@ -1,5 +1,6 @@
 package uk.co.harieo.battleships.votes;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -46,7 +47,7 @@ public class CoordinateVote {
 		this.tasks = tasks;
 		this.game = game;
 		this.gui = gui;
-		this.timer = new GenericTimer(game, 30, end -> endVote());
+		this.timer = new GenericTimer(game, 15, end -> endVote());
 		this.team = team;
 
 		BattleshipsMap map = game.getMap();
@@ -87,6 +88,10 @@ public class CoordinateVote {
 						playerVotes.put(player, coordinate);
 					}
 
+					if (playerVotes.size() == team.getTeamMembers().size()) {
+						endVote();
+					}
+
 					Coordinate highestCoordinate = getHighestCoordinate();
 					if (mostPopularCoordinate == null ||
 							!mostPopularCoordinate
@@ -102,7 +107,7 @@ public class CoordinateVote {
 		});
 
 		timer.setOnRun(timeLeft -> {
-			if (timeLeft == 15 || timeLeft <= 5) {
+			if (timeLeft <= 5) {
 				timer.pingTime();
 			}
 		});
@@ -121,6 +126,8 @@ public class CoordinateVote {
 	 */
 	private void endVote() {
 		this.isOpen = false;
+		timer.cancel();
+
 		for (GamePlayer gamePlayer : team.getTeamMembers()) {
 			gamePlayer.toBukkit().getOpenInventory().close();
 		}

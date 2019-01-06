@@ -1,14 +1,19 @@
 package uk.co.harieo.battleships.ships;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.Battleships;
+import uk.co.harieo.battleships.maps.BattleshipsMap;
+import uk.co.harieo.battleships.maps.Coordinate;
 
 public class ShipStore {
 
@@ -47,6 +52,42 @@ public class ShipStore {
 	 */
 	public void setDestroyed(GamePlayer player, boolean isDestroyed) {
 		destroyed.replace(player, isDestroyed);
+	}
+
+	/**
+	 * Checks whether the specified {@link Coordinate} has a ship on it and whether that ship has been destroyed
+	 *
+	 * @param coordinate to be checked
+	 * @return whether the Coordinate contained a ship that is now destroyed
+	 */
+	public boolean checkIfDestroyed(Coordinate coordinate) {
+		BattleshipsMap map = Battleships.getInstance().getMap();
+		Battleship ship = map.getShip(coordinate);
+		GamePlayer owningPlayer = map.getOwningPlayer(coordinate);
+		if (ship != null && !destroyed.get(owningPlayer)) {
+			// Retrieve a list of coordinates with the same ship and owner as the parameter
+			List<Coordinate> shipCoordinates = map.getCoordinates(coordinate.getTeam()).stream()
+					.filter(teamCoordinate -> map.getShip(teamCoordinate) != null
+							&& map.getShip(teamCoordinate).equals(ship)
+							&& map.getOwningPlayer(teamCoordinate) != null
+							&& map.getOwningPlayer(teamCoordinate).equals(owningPlayer))
+					.collect(Collectors.toList());
+
+			boolean stillAlive = false;
+			for (Coordinate teamCoordinate : shipCoordinates) {
+				if (!map.isHit(teamCoordinate)) {
+					stillAlive = true;
+				}
+			}
+
+			if (!stillAlive) {
+				destroyed.replace(owningPlayer, true);
+			}
+
+			return !stillAlive; // If the ship is still alive, it has NOT been destroyed
+		} else {
+			return false; // Nothing was destroyed here
+		}
 	}
 
 	/**

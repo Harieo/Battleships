@@ -1,4 +1,4 @@
-package uk.co.harieo.battleships.listeners;
+package uk.co.harieo.battleships;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import net.md_5.bungee.api.ChatColor;
 import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.games.Game;
-import uk.co.harieo.battleships.Battleships;
 
 public class BattleshipsChatModule implements ChatModule {
 

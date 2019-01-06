@@ -7,13 +7,15 @@ import org.bukkit.scoreboard.DisplaySlot;
 import net.md_5.bungee.api.ChatColor;
 import uk.co.harieo.FurCore.scoreboards.ConstantElement;
 import uk.co.harieo.FurCore.scoreboards.GameBoard;
+import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.games.GameState;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
+import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.ships.ShipStore;
 
-class InGameTasks {
+public class InGameTasks {
 
 	private static GameBoard scoreboard;
 
@@ -77,6 +79,70 @@ class InGameTasks {
 		scoreboard.addBlankLine();
 
 		scoreboard.addLine(new ConstantElement(Battleships.SCOREBOARD_IP));
+	}
+
+	/**
+	 * Checks to see if the game has been won by either team yet
+	 *
+	 * @param game that this is being run based on
+	 * @return true if the game has been won or false if the game has not been won
+	 */
+	public static boolean checkWinConditions(Battleships game) {
+		ChatModule module = game.chatModule();
+		Team blueTeam = game.getBlueTeam();
+		Team redTeam = game.getRedTeam();
+
+		boolean gameIsOver = false;
+		boolean winByDestruction = false;
+		Team winningTeam = null;
+		Team losingTeam = null;
+
+		// A team has no ships left
+		if (ShipStore.get(blueTeam).getShipsRemaining() <= 0) {
+			gameIsOver = true;
+			winByDestruction = true;
+			winningTeam = redTeam;
+			losingTeam = blueTeam;
+		} else if (ShipStore.get(redTeam).getShipsRemaining() <= 0) {
+			gameIsOver = true;
+			winByDestruction = true;
+			winningTeam = blueTeam;
+			losingTeam = redTeam;
+		}
+
+		// A team has no players left
+		if (blueTeam.getTeamMembers().size() <= 0) {
+			gameIsOver = true;
+			winningTeam = redTeam;
+			losingTeam = blueTeam;
+		} else if (redTeam.getTeamMembers().size() <= 0) {
+			gameIsOver = true;
+			winningTeam = blueTeam;
+			losingTeam = redTeam;
+		}
+
+		if (gameIsOver) {
+			Bukkit.broadcastMessage("");
+			if (winByDestruction) {
+				Bukkit.broadcastMessage(module.formatSystemMessage(
+						"The " + winningTeam.getFormattedName() + ChatColor.WHITE + " have destroyed all of the "
+								+ losingTeam
+								.getFormattedName() + ChatColor.WHITE + "'s ships!"));
+			} else {
+				Bukkit.broadcastMessage(module.formatSystemMessage(
+						"The " + losingTeam.getFormattedName() + ChatColor.WHITE
+								+ " have fled the battle in fear of the " + winningTeam.getFormattedName()));
+			}
+
+			Bukkit.broadcastMessage(module.formatSystemMessage(
+					"The " + winningTeam.getFormattedName() + ChatColor.WHITE + " is " + ChatColor.GREEN
+							+ ChatColor.BOLD
+							.toString() + "Victorious"));
+			Bukkit.broadcastMessage("");
+			EndGameTasks.beginEndGame(game, winningTeam);
+		}
+
+		return gameIsOver;
 	}
 
 }

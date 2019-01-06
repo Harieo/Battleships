@@ -23,6 +23,7 @@ import uk.co.harieo.GamesCore.games.GameState;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.battleships.Battleships;
+import uk.co.harieo.battleships.tasks.InGameTasks;
 
 public class ConnectionsListener implements Listener {
 
@@ -92,6 +93,11 @@ public class ConnectionsListener implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		event.setQuitMessage(null);
+		Battleships game = Battleships.getInstance();
+
+		if (game.getState() == GameState.IN_GAME) {
+			InGameTasks.checkWinConditions(game); // This will check if any team has no players
+		}
 	}
 
 }
