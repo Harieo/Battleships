@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import uk.co.harieo.FurCore.maps.MapImpl;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.teams.Team;
@@ -53,6 +54,16 @@ public class BattleshipsMap {
 	 */
 	public List<BattleshipsTile> getTiles() {
 		return tiles;
+	}
+
+	/**
+	 * Gets all tiles that apply to a specific {@link Coordinate}
+	 *
+	 * @param coordinate to get all tiles for
+	 * @return a list of tiles that apply to the given {@link Coordinate}
+	 */
+	public List<BattleshipsTile> getTiles(Coordinate coordinate) {
+		return tiles.stream().filter(tile -> matchesCoordinate(coordinate, tile)).collect(Collectors.toList());
 	}
 
 	/**
@@ -223,6 +234,17 @@ public class BattleshipsMap {
 			}
 		}
 		return coordinates;
+	}
+
+	/**
+	 * Checks whether a coordinate is both of the given team and is a registered coordinate in this map
+	 *
+	 * @param team this coordinate should be owned by
+	 * @param coordinate to check whether it exists in the team's list
+	 * @return whether the coordinate is applicable to the given team and this map
+	 */
+	public boolean isApplicableCoordinate(Team team, Coordinate coordinate) {
+		return getCoordinates(team).contains(coordinate);
 	}
 
 	/**

@@ -30,6 +30,11 @@ import uk.co.harieo.battleships.tasks.PreGameTasks;
 
 public class Battleships extends JavaPlugin implements Game {
 
+	public static final String SCOREBOARD_IP =
+			ChatColor.GOLD +  "play" + ChatColor.DARK_GRAY + "." + ChatColor.YELLOW
+					.toString() + "harieo" + ChatColor.DARK_GRAY + "."
+					+ ChatColor.GOLD + "me";
+
 	private static Battleships INSTANCE;
 	private static GameState STATE = GameState.LOBBY;
 	private static int GAME_NUMBER;
@@ -112,7 +117,7 @@ public class Battleships extends JavaPlugin implements Game {
 		lobbyScoreboard.addBlankLine();
 
 		lobbyScoreboard.addLine(
-				new ConstantElement(ChatColor.YELLOW + ChatColor.BOLD.toString() + "patreon.com/harieo"));
+				new ConstantElement(SCOREBOARD_IP));
 	}
 
 	private void registerListeners(Listener... listeners) {

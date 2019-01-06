@@ -49,7 +49,7 @@ public class ShipPlacementGUI {
 
 		this.map = Battleships.getInstance().getMap();
 
-		this.gui = new BattleGUI(team, Battleships.getInstance().getMap());
+		this.gui = new BattleGUI(team, Battleships.getInstance().getMap(), true);
 		ChatModule module = Battleships.getInstance().chatModule();
 		gui.setOnClick(event -> {
 			if (event.getSlot() == 26) {

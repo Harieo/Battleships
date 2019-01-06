@@ -1,5 +1,6 @@
 package uk.co.harieo.battleships.tasks;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 
@@ -26,6 +27,8 @@ class InGameTasks {
 		for (GamePlayer player : GamePlayerStore.instance(game).getAll()) {
 			scoreboard.render(game, player.toBukkit(), 5);
 		}
+
+		Bukkit.getScheduler().runTaskLater(game, bukkitTask -> new RoundTasks(game), 20 * 3);
 	}
 
 	private static void setupScoreboard(Battleships game) {
@@ -63,10 +66,7 @@ class InGameTasks {
 		});
 		scoreboard.addBlankLine();
 
-		scoreboard.addLine(new ConstantElement(ChatColor.YELLOW + ChatColor.BOLD.toString() + "patreon.com/harieo"));
+		scoreboard.addLine(new ConstantElement(Battleships.SCOREBOARD_IP));
 	}
 
-	public static GameBoard getScoreboard() {
-		return scoreboard;
-	}
 }

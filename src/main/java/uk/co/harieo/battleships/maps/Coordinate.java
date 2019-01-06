@@ -55,14 +55,14 @@ public class Coordinate {
 	public static Coordinate getCoordinate(char letter, int number, Team team) {
 		Coordinate coordinate = null;
 		for (Coordinate cachedCoordinate : coordinates) {
-			if (cachedCoordinate.getLetter() == letter && cachedCoordinate.getNumber() == number
+			if (cachedCoordinate.getLetter() == Character.toLowerCase(letter) && cachedCoordinate.getNumber() == number
 					&& cachedCoordinate.getTeam().equals(team)) {
 				coordinate = cachedCoordinate;
 			}
 		}
 
 		if (coordinate == null) {
-			coordinate = new Coordinate(letter, number, team);
+			coordinate = new Coordinate(Character.toLowerCase(letter), number, team);
 			coordinates.add(coordinate);
 		}
 
@@ -71,7 +71,7 @@ public class Coordinate {
 
 	@Override
 	public String toString() {
-		return getLetter() + "" + getNumber();
+		return Character.toUpperCase(getLetter()) + "" + getNumber();
 	}
 
 }

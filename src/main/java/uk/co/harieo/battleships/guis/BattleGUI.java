@@ -21,18 +21,20 @@ public class BattleGUI extends GUI {
 
 	private Team displayTeam;
 	private BattleshipsMap map;
+	private boolean showShips;
 
 	private Map<Integer, Coordinate> coordinates = new HashMap<>();
 
 	private Consumer<InventoryClickEvent> onClick;
 	private Consumer<InventoryCloseEvent> onClose;
 
-	public BattleGUI(Team displayTeam, BattleshipsMap map) {
+	public BattleGUI(Team displayTeam, BattleshipsMap map, boolean showShips) {
 		super(displayTeam.getFormattedName() + "'s Board",
 				(map.getHighestY() >= 5 ? map.getHighestY() : 5)); // Y axis will be the one going down each row
 
 		this.displayTeam = displayTeam;
 		this.map = map;
+		this.showShips = showShips;
 	}
 
 	@Override
@@ -57,6 +59,10 @@ public class BattleGUI extends GUI {
 		this.onClose = onClose;
 	}
 
+	public Team getDisplayTeam() {
+		return displayTeam;
+	}
+
 	public void setFleetItems() {
 		getInventory().clear();
 		List<Coordinate> coordinates = map.getCoordinates(displayTeam);
@@ -65,7 +71,7 @@ public class BattleGUI extends GUI {
 		}
 	}
 
-	private ItemStack createItem(Coordinate coordinate) {
+	public ItemStack createItem(Coordinate coordinate) {
 		ItemStack item = new ItemStack(Material.LIGHT_BLUE_TERRACOTTA);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(
@@ -88,7 +94,7 @@ public class BattleGUI extends GUI {
 		Battleship ship = map.getShip(coordinate);
 		String ownedByText = ChatColor.WHITE + "Owned by the " + displayTeam.getFormattedName();
 
-		if (ship != null) {
+		if (ship != null && showShips) {
 			item.setType(Material.ORANGE_TERRACOTTA);
 			meta.setLore(Arrays.asList("", ship.getFormattedName(), ownedByText, "",
 					ChatColor.WHITE + "Status: " + status));
@@ -101,7 +107,7 @@ public class BattleGUI extends GUI {
 	}
 
 	// char 'a' is 97
-	private int getSlot(Coordinate coordinate) {
+	public int getSlot(Coordinate coordinate) {
 		int slot = 0;
 		slot += coordinate.getNumber() - 1; // Representing the X value -1 to bring down to 0
 		slot += (((int) coordinate.getLetter()) - 96) * 9; // Representing the Y value in lower case
@@ -110,17 +116,17 @@ public class BattleGUI extends GUI {
 		return slot;
 	}
 
-	Coordinate getCoordinate(int slot) {
+	public Coordinate getCoordinate(int slot) {
 		return coordinates.get(slot);
 	}
 
-	public boolean canPlaceShip(Battleship ship, Coordinate centralCoordinate, boolean isHorizontal) {
+	boolean canPlaceShip(Battleship ship, Coordinate centralCoordinate, boolean isHorizontal) {
 		// The list of coordinates will exclude invalid coordinates meaning if an invalid coordinate was excluded,
 		// the size would differ from list to ship
 		return getCoordinateSpread(ship, centralCoordinate, isHorizontal).size() == ship.getSize();
 	}
 
-	public void placeShip(GamePlayer player, Coordinate centralCoordinate, boolean isHorizontal) {
+	void placeShip(GamePlayer player, Coordinate centralCoordinate, boolean isHorizontal) {
 		Battleship ship = ShipStore.get(player.getTeam()).getShip(player);
 		if (canPlaceShip(ship, centralCoordinate, isHorizontal)) {
 			for (Coordinate coordinate : getCoordinateSpread(ship, centralCoordinate, isHorizontal)) {
@@ -151,7 +157,8 @@ public class BattleGUI extends GUI {
 				}
 			}
 
-			if (slot < 0 || slot >= getInventory().getSize() || map.getOwningPlayer(getCoordinate(slot)) != null) {
+			if (!map.isApplicableCoordinate(displayTeam, getCoordinate(slot)) || slot < 0
+					|| slot >= getInventory().getSize() || map.getOwningPlayer(getCoordinate(slot)) != null) {
 				continue;
 			}
 
