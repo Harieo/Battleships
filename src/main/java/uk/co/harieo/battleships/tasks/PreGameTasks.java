@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.List;
+import java.util.Map;
 import uk.co.harieo.FurBridge.players.PlayerInfo;
 import uk.co.harieo.GamesCore.games.Game;
 import uk.co.harieo.GamesCore.games.GameState;
@@ -12,8 +14,12 @@ import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.timers.GenericTimer;
 import uk.co.harieo.battleships.Battleships;
+import uk.co.harieo.battleships.guis.BattleGUI;
 import uk.co.harieo.battleships.guis.ShipPlacementGUI;
 import uk.co.harieo.battleships.items.MenuOpenerItem;
+import uk.co.harieo.battleships.maps.BattleshipsMap;
+import uk.co.harieo.battleships.maps.Coordinate;
+import uk.co.harieo.battleships.ships.Battleship;
 import uk.co.harieo.battleships.ships.ShipStore;
 
 /**
@@ -56,6 +62,7 @@ public class PreGameTasks {
 		GenericTimer timer = new GenericTimer(game, 30, end -> {
 			unregisterAllInventories(game);
 			teleportToStart(game);
+			placeFakeShips(game);
 			InGameTasks.beginInGameTasks(game);
 		});
 
@@ -128,7 +135,7 @@ public class PreGameTasks {
 	 *
 	 * @param game instance that this game is running on
 	 */
-	private static void unregisterAllInventories(Game game) {
+	private static void unregisterAllInventories(Battleships game) {
 		for (GamePlayer gamePlayer : GamePlayerStore.instance(game).getAll()) {
 			Player player = gamePlayer.toBukkit();
 			if (player.isOnline()) {
@@ -141,6 +148,52 @@ public class PreGameTasks {
 			}
 			placementGUI.getGui().unregister();
 		}
+	}
+
+	/**
+	 * Creates a set of fake {@link Battleship} placements to replace players missing from a team
+	 *
+	 * @param game instance that this game is running on
+	 */
+	private static void placeFakeShips(Battleships game) {
+		Team blue = game.getBlueTeam();
+		Team red = game.getRedTeam();
+
+		Map<GamePlayer, Battleship> blueFakes = ShipStore.get(blue).assignFakeShips();
+		Map<GamePlayer, Battleship> redFakes = ShipStore.get(red).assignFakeShips();
+
+		BattleshipsMap map = game.getMap();
+		BattleGUI blueGUI = new BattleGUI(blue, map, false);
+		BattleGUI redGUI = new BattleGUI(red, map, false);
+
+		for (GamePlayer fakePlayer : blueFakes.keySet()) {
+			Battleship battleship = blueFakes.get(fakePlayer);
+			for (Coordinate coordinate : map.getCoordinates(blue)) {
+				if (blueGUI.canPlaceShip(battleship, coordinate, true)) {
+					blueGUI.placeShip(fakePlayer, coordinate, true);
+					break;
+				} else if (blueGUI.canPlaceShip(battleship, coordinate, false)) {
+					blueGUI.placeShip(fakePlayer, coordinate, false);
+					break;
+				}
+			}
+		}
+
+		for (GamePlayer fakePlayer : redFakes.keySet()) {
+			Battleship battleship = redFakes.get(fakePlayer);
+			for (Coordinate coordinate : map.getCoordinates(red)) {
+				if (redGUI.canPlaceShip(battleship, coordinate, true)) {
+					redGUI.placeShip(fakePlayer, coordinate, true);
+					break;
+				} else if (redGUI.canPlaceShip(battleship, coordinate, false)) {
+					redGUI.placeShip(fakePlayer, coordinate, false);
+					break;
+				}
+			}
+		}
+
+		blueGUI.unregister();
+		redGUI.unregister();
 	}
 
 }

@@ -46,9 +46,7 @@ public class MenuOpenerItem extends InteractiveItem {
 					if (taskManager.getCurrentlyPlaying().equals(team) && taskManager.getVote(team).isOpen()) {
 						player.openInventory(taskManager.getGUI(team).getInventory());
 					} else {
-						player.sendMessage(module.formatSystemMessage(
-								"Your artillery is " + ChatColor.RED + "reloading, " + ChatColor.WHITE
-										+ "please wait until the enemy has finished their turn!"));
+						player.openInventory(taskManager.getPassiveGUI(team).getInventory());
 					}
 				}
 			}

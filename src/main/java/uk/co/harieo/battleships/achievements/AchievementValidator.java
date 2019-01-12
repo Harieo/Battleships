@@ -42,7 +42,8 @@ public class AchievementValidator {
 						List<BattleshipsAchievement> completedAchievements = new ArrayList<>();
 
 						// 50 wins
-						if (!achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WINS_50)) {
+						if (!achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WINS_50) && gamePlayer
+								.hasTeam() && gamePlayer.getTeam().equals(winners)) {
 							incrementProgress(player, achievementsInfo, BattleshipsAchievement.WINS_50);
 							// They may not have completed it yet
 							if (achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WINS_50)) {
@@ -50,7 +51,8 @@ public class AchievementValidator {
 							}
 						}
 						// 150 wins
-						if (!achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WINS_150)) {
+						if (!achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WINS_150) && gamePlayer
+								.hasTeam() && gamePlayer.getTeam().equals(winners)) {
 							incrementProgress(player, achievementsInfo, BattleshipsAchievement.WINS_150);
 							// They may not have completed it yet
 							if (achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WINS_150)) {
@@ -58,11 +60,13 @@ public class AchievementValidator {
 							}
 						}
 						// Win without damage
-						if (!achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WIN_UNDAMAGED)) {
-							List<Coordinate> shipCoordinates = map.getCoordinates(winners).stream().filter(coordinate -> {
-								GamePlayer owner = map.getOwningPlayer(coordinate);
-								return owner != null && owner.equals(gamePlayer);
-							}).collect(Collectors.toList());
+						if (!achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WIN_UNDAMAGED) && gamePlayer
+								.hasTeam() && gamePlayer.getTeam().equals(winners)) {
+							List<Coordinate> shipCoordinates = map.getCoordinates(winners).stream()
+									.filter(coordinate -> {
+										GamePlayer owner = map.getOwningPlayer(coordinate);
+										return owner != null && owner.equals(gamePlayer);
+									}).collect(Collectors.toList());
 
 							boolean undamaged = true;
 
@@ -78,7 +82,8 @@ public class AchievementValidator {
 							}
 						}
 						// Win a game by the enemy team leaving
-						if (!achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WIN_FORFEIT) && !scoreWin) {
+						if (!achievementsInfo.hasUnlockedAchievement(BattleshipsAchievement.WIN_FORFEIT) && !scoreWin
+								&& gamePlayer.hasTeam() && gamePlayer.getTeam().equals(winners)) {
 							if (gamePlayer.hasTeam() && gamePlayer.getTeam().equals(winners)) {
 								incrementProgress(player, achievementsInfo, BattleshipsAchievement.WIN_FORFEIT);
 								completedAchievements.add(BattleshipsAchievement.WIN_FORFEIT);
@@ -119,7 +124,8 @@ public class AchievementValidator {
 	private static void sendAchievementUnlockedMessage(BattleshipsAchievement achievement, Player player) {
 		ChatModule module = Battleships.getInstance().chatModule();
 		player.sendMessage("");
-		player.sendMessage(module.formatSystemMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Achievement Completed"));
+		player.sendMessage(
+				module.formatSystemMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Achievement Completed"));
 		player.sendMessage(module.formatSystemMessage(ChatColor.GRAY + achievement.getDescription()));
 		player.sendMessage("");
 		player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);

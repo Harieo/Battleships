@@ -176,7 +176,7 @@ public class BattleGUI extends GUI {
 	 * @param centralCoordinate center of the ship
 	 * @param isHorizontal whether the ship is being placed horizontally or vertically
 	 */
-	boolean canPlaceShip(Battleship ship, Coordinate centralCoordinate, boolean isHorizontal) {
+	public boolean canPlaceShip(Battleship ship, Coordinate centralCoordinate, boolean isHorizontal) {
 		// The list of coordinates will exclude invalid coordinates meaning if an invalid coordinate was excluded,
 		// the size would differ from list to ship
 		return getCoordinateSpread(ship, centralCoordinate, isHorizontal).size() == ship.getSize();
@@ -190,7 +190,7 @@ public class BattleGUI extends GUI {
 	 * @param centralCoordinate center of the ship
 	 * @param isHorizontal whether this ship is being placed horizontally or vertically
 	 */
-	void placeShip(GamePlayer player, Coordinate centralCoordinate, boolean isHorizontal) {
+	public void placeShip(GamePlayer player, Coordinate centralCoordinate, boolean isHorizontal) {
 		Battleship ship = ShipStore.get(player.getTeam()).getShip(player);
 		if (canPlaceShip(ship, centralCoordinate, isHorizontal)) {
 			for (Coordinate coordinate : getCoordinateSpread(ship, centralCoordinate, isHorizontal)) {

@@ -186,7 +186,7 @@ public class Battleships extends JavaPlugin implements Game {
 
 	@Override
 	public int getMinimumPlayers() {
-		return 1;
+		return 4;
 	}
 
 	@Override

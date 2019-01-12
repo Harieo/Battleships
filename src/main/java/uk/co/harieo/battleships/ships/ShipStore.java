@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.players.GamePlayer;
+import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.maps.BattleshipsMap;
@@ -159,6 +160,42 @@ public class ShipStore {
 				i++; // Onto the next ship type
 			}
 		}
+	}
+
+	public Map<GamePlayer, Battleship> assignFakeShips() {
+		Battleship[] battleships = Battleship.values();
+		Map<GamePlayer, Battleship> shipsClone = new HashMap<>(ships); // Clone the map so we can remove used values
+		Map<GamePlayer, Battleship> fakeShips = new HashMap<>();
+
+		int quantity = 1;
+		for (int i = 0; i < battleships.length;) {
+			Battleship battleship = battleships[i];
+			GamePlayer matchingKey = null;
+
+			for (GamePlayer gamePlayer : shipsClone.keySet()) {
+				if (shipsClone.get(gamePlayer).equals(battleship)) {
+					matchingKey = gamePlayer;
+				}
+			}
+
+			if (matchingKey == null) {
+				GamePlayer fakePlayer = GamePlayerStore.instance(Battleships.getInstance()).createFakePlayer();
+				fakePlayer.setTeam(team);
+				ships.put(fakePlayer, battleship);
+				destroyed.put(fakePlayer, false);
+				fakeShips.put(fakePlayer, battleship);
+			} else {
+				shipsClone.remove(matchingKey); // Remove the key so it never applies again
+			}
+
+			if (quantity < battleship.getMaxPerGame()) {
+				quantity++; // Need more of this per game
+			} else {
+				i++; // Onto the next ship type
+			}
+		}
+
+		return fakeShips;
 	}
 
 	/**

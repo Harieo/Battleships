@@ -22,8 +22,10 @@ public class RoundTasks {
 	private Battleships game;
 
 	private BattleGUI blueGUI;
+	private BattleGUI bluePassiveGUI;
 	private CoordinateVote blueVote;
 	private BattleGUI redGUI;
+	private BattleGUI redPassiveGUI;
 	private CoordinateVote redVote;
 
 	private Team currentlyPlaying;
@@ -36,7 +38,9 @@ public class RoundTasks {
 	RoundTasks(Battleships game) {
 		this.game = game;
 		this.blueGUI = new BattleGUI(game.getRedTeam(), game.getMap(), false); // Show blue team red board
+		this.bluePassiveGUI = new BattleGUI(game.getBlueTeam(), game.getMap(), true);
 		this.redGUI = new BattleGUI(game.getBlueTeam(), game.getMap(), false); // Show red team blue board
+		this.redPassiveGUI = new BattleGUI(game.getRedTeam(), game.getMap(), true);
 		this.currentlyPlaying = game.getBlueTeam();
 		progressRound();
 	}
@@ -46,8 +50,10 @@ public class RoundTasks {
 	 */
 	private void progressRound() {
 		blueGUI.setFleetItems();
+		bluePassiveGUI.setFleetItems();
 		blueVote = new CoordinateVote(this, game, blueGUI, game.getBlueTeam());
 		redGUI.setFleetItems();
+		redPassiveGUI.setFleetItems();
 		redVote = new CoordinateVote(this, game, redGUI, game.getRedTeam());
 
 		this.currentlyPlaying = game.getBlueTeam();
@@ -70,11 +76,21 @@ public class RoundTasks {
 				Player player = gamePlayer.toBukkit();
 				player.openInventory(blueGUI.getInventory());
 			}
+
+			for (GamePlayer gamePlayer : game.getRedTeam().getTeamMembers()) {
+				Player player = gamePlayer.toBukkit();
+				player.openInventory(redPassiveGUI.getInventory());
+			}
 			blueVote.beginVote();
 		} else {
 			for (GamePlayer gamePlayer : currentlyPlaying.getTeamMembers()) {
 				Player player = gamePlayer.toBukkit();
 				player.openInventory(redGUI.getInventory());
+			}
+
+			for (GamePlayer gamePlayer : game.getBlueTeam().getTeamMembers()) {
+				Player player = gamePlayer.toBukkit();
+				player.openInventory(bluePassiveGUI.getInventory());
 			}
 			redVote.beginVote();
 		}
@@ -91,6 +107,10 @@ public class RoundTasks {
 		Bukkit.broadcastMessage(module.formatSystemMessage(
 				"The " + team.getFormattedName() + ChatColor.WHITE + " is targeting sector " + ChatColor.RED
 						+ ChatColor.BOLD.toString() + coordinate.toString()));
+
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			player.getOpenInventory().close();
+		}
 
 		new ShootingAnimation(game, coordinate).setOnEnd(end -> {
 			BattleshipsMap map = game.getMap();
@@ -112,8 +132,10 @@ public class RoundTasks {
 					Bukkit.broadcastMessage("");
 					Bukkit.broadcastMessage(module.formatSystemMessage(
 							ChatColor.RED + "A thunderous explosion sounds! " + ChatColor.WHITE + "It appears "
-									+ ChatColor.GREEN + gamePlayer.toBukkit().getName()
-									+ "'s " + ChatColor.WHITE + "ship has been destroyed!"));
+									+ ChatColor.GREEN +
+									(gamePlayer.isFake() ? "a random " : gamePlayer.toBukkit().getName() + "'s ")
+									+ map.getShip(coordinate).getFormattedName() + ChatColor.WHITE
+									+ " has been destroyed!"));
 				}
 			} else {
 				message = ChatColor.RED + "That made a big splash! " + ChatColor.WHITE + "The " + currentlyPlaying
@@ -122,6 +144,18 @@ public class RoundTasks {
 
 			Bukkit.broadcastMessage("");
 			Bukkit.broadcastMessage(module.formatSystemMessage(message));
+
+			Team enemy;
+			if (currentlyPlaying.equals(game.getBlueTeam())) {
+				enemy = game.getRedTeam();
+			} else {
+				enemy = game.getBlueTeam();
+			}
+
+			Bukkit.broadcastMessage(module.formatSystemMessage(
+					"The " + enemy.getFormattedName() + ChatColor.WHITE + " has " + ChatColor.GREEN
+							+ ShipStore.get(enemy).getShipsRemaining() + " ships " + ChatColor.WHITE
+							+ "left"));
 			Bukkit.broadcastMessage("");
 
 			if (InGameTasks.checkWinConditions(game)) {
@@ -147,6 +181,14 @@ public class RoundTasks {
 			return blueGUI;
 		} else {
 			return redGUI;
+		}
+	}
+
+	public BattleGUI getPassiveGUI(Team team) {
+		if (team.equals(game.getBlueTeam())) {
+			return bluePassiveGUI;
+		} else {
+			return redPassiveGUI;
 		}
 	}
 

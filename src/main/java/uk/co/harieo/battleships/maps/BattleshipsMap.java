@@ -5,6 +5,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import uk.co.harieo.FurCore.maps.MapImpl;
@@ -233,6 +235,7 @@ public class BattleshipsMap {
 				coordinates.add(coordinate);
 			}
 		}
+		Collections.shuffle(coordinates);
 		return coordinates;
 	}
 
