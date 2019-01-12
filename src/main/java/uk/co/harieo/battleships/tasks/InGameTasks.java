@@ -18,6 +18,7 @@ import uk.co.harieo.battleships.ships.ShipStore;
 public class InGameTasks {
 
 	private static GameBoard scoreboard;
+	private static RoundTasks taskManager;
 
 	/**
 	 * Begins all tasks related to primary game functions, using {@link RoundTasks} as the task manager
@@ -35,7 +36,15 @@ public class InGameTasks {
 			scoreboard.render(game, player.toBukkit(), 5);
 		}
 
-		Bukkit.getScheduler().runTaskLater(game, bukkitTask -> new RoundTasks(game), 20 * 3);
+		Bukkit.getScheduler().runTaskLater(game, bukkitTask -> taskManager = new RoundTasks(game), 20 * 3);
+	}
+
+	/**
+	 * @return the instance of {@link RoundTasks} which is managing all in-game tasks. This may be null as there is a
+	 * 60 tick delay before it is created after calling {@link #beginInGameTasks(Battleships)}.
+	 */
+	public static RoundTasks getTaskManager() {
+		return taskManager;
 	}
 
 	/**
@@ -97,8 +106,15 @@ public class InGameTasks {
 		Team winningTeam = null;
 		Team losingTeam = null;
 
-		// A team has no ships left
-		if (ShipStore.get(blueTeam).getShipsRemaining() <= 0) {
+		if (blueTeam.getTeamMembers().size() <= 0) { // A team has no players left
+			gameIsOver = true;
+			winningTeam = redTeam;
+			losingTeam = blueTeam;
+		} else if (redTeam.getTeamMembers().size() <= 0) {
+			gameIsOver = true;
+			winningTeam = blueTeam;
+			losingTeam = redTeam;
+		} else if (ShipStore.get(blueTeam).getShipsRemaining() <= 0) { // A team has no ships left
 			gameIsOver = true;
 			winByDestruction = true;
 			winningTeam = redTeam;
@@ -106,17 +122,6 @@ public class InGameTasks {
 		} else if (ShipStore.get(redTeam).getShipsRemaining() <= 0) {
 			gameIsOver = true;
 			winByDestruction = true;
-			winningTeam = blueTeam;
-			losingTeam = redTeam;
-		}
-
-		// A team has no players left
-		if (blueTeam.getTeamMembers().size() <= 0) {
-			gameIsOver = true;
-			winningTeam = redTeam;
-			losingTeam = blueTeam;
-		} else if (redTeam.getTeamMembers().size() <= 0) {
-			gameIsOver = true;
 			winningTeam = blueTeam;
 			losingTeam = redTeam;
 		}
@@ -139,7 +144,7 @@ public class InGameTasks {
 							+ ChatColor.BOLD
 							.toString() + "Victorious"));
 			Bukkit.broadcastMessage("");
-			EndGameTasks.beginEndGame(game, winningTeam);
+			EndGameTasks.beginEndGame(game, winningTeam, winByDestruction);
 		}
 
 		return gameIsOver;

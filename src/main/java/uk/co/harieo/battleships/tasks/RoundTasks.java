@@ -14,7 +14,6 @@ import uk.co.harieo.battleships.animation.ShootingAnimation;
 import uk.co.harieo.battleships.guis.BattleGUI;
 import uk.co.harieo.battleships.maps.BattleshipsMap;
 import uk.co.harieo.battleships.maps.Coordinate;
-import uk.co.harieo.battleships.ships.Battleship;
 import uk.co.harieo.battleships.ships.ShipStore;
 import uk.co.harieo.battleships.votes.CoordinateVote;
 
@@ -70,14 +69,14 @@ public class RoundTasks {
 			for (GamePlayer gamePlayer : currentlyPlaying.getTeamMembers()) {
 				Player player = gamePlayer.toBukkit();
 				player.openInventory(blueGUI.getInventory());
-				blueVote.beginVote();
 			}
+			blueVote.beginVote();
 		} else {
 			for (GamePlayer gamePlayer : currentlyPlaying.getTeamMembers()) {
 				Player player = gamePlayer.toBukkit();
 				player.openInventory(redGUI.getInventory());
-				redVote.beginVote();
 			}
+			redVote.beginVote();
 		}
 	}
 
@@ -137,6 +136,26 @@ public class RoundTasks {
 				scheduler.runTaskLater(game, task -> handleRound(), 20 * 3);
 			}
 		});
+	}
+
+	public Team getCurrentlyPlaying() {
+		return currentlyPlaying;
+	}
+
+	public BattleGUI getGUI(Team team) {
+		if (team.equals(game.getBlueTeam())) {
+			return blueGUI;
+		} else {
+			return redGUI;
+		}
+	}
+
+	public CoordinateVote getVote(Team team) {
+		if (team.equals(game.getBlueTeam())) {
+			return blueVote;
+		} else {
+			return redVote;
+		}
 	}
 
 }

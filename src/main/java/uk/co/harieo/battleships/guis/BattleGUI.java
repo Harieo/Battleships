@@ -215,22 +215,24 @@ public class BattleGUI extends GUI {
 		list.add(centralCoordinate); // This is included in the spread
 
 		boolean goHigher = true;
+		int modifier = 1;
 		for (int i = 1; i < ship.getSize(); ) {
 			int slot;
 			if (goHigher) {
 				if (isHorizontal) {
-					slot = getSlot(centralCoordinate) + i;
+					slot = getSlot(centralCoordinate) + modifier;
 				} else {
-					slot = getSlot(centralCoordinate) + (i * 9); // Going vertically
+					slot = getSlot(centralCoordinate) + (modifier * 9); // Going vertically
 				}
 			} else {
 				if (isHorizontal) {
-					slot = getSlot(centralCoordinate) - (i);
+					slot = getSlot(centralCoordinate) - modifier;
 				} else {
-					slot = getSlot(centralCoordinate) - (i * 9);
+					slot = getSlot(centralCoordinate) - (modifier * 9);
 				}
-				i++;
+				modifier++;
 			}
+			i++;
 
 			goHigher = !goHigher; // This creates an effect that makes the central coordinate central
 

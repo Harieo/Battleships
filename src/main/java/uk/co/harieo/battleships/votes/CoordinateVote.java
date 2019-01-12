@@ -89,6 +89,7 @@ public class CoordinateVote {
 					}
 
 					if (playerVotes.size() == team.getTeamMembers().size()) {
+						timer.cancel();
 						endVote();
 					}
 
@@ -126,13 +127,19 @@ public class CoordinateVote {
 	 */
 	private void endVote() {
 		this.isOpen = false;
-		timer.cancel();
 
 		for (GamePlayer gamePlayer : team.getTeamMembers()) {
 			gamePlayer.toBukkit().getOpenInventory().close();
 		}
 
 		tasks.endShotVote(team, getHighestCoordinate());
+	}
+
+	/**
+	 * @return whether this vote is still open
+	 */
+	public boolean isOpen() {
+		return isOpen;
 	}
 
 	/**

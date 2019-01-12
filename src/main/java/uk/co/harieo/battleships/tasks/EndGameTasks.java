@@ -20,12 +20,15 @@ import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.timers.GenericTimer;
 import uk.co.harieo.battleships.Battleships;
+import uk.co.harieo.battleships.achievements.AchievementValidator;
 
 class EndGameTasks {
 
-	static void beginEndGame(Battleships game, Team winners) {
+	static void beginEndGame(Battleships game, Team winners, boolean scoreWin) {
 		game.getLogger().info("Beginning end-game tasks");
 		game.setState(GameState.END_GAME);
+
+		AchievementValidator.checkEndGameAchievements(winners, scoreWin);
 
 		GenericTimer endTimer = new GenericTimer(game, 10, end -> Bukkit.getServer().shutdown());
 
@@ -60,7 +63,7 @@ class EndGameTasks {
 	private static void spawnFireworks(Team winners, Consumer<Firework> updateFirework) {
 		for (GamePlayer gamePlayer : winners.getTeamMembers()) {
 			Player player = gamePlayer.toBukkit();
-			if (player.isOnline()) { // The chances of a player leaving during end game are astronomical
+			if (player.isOnline()) { // The chances of a player leaving during end game are very high
 				Firework firework = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
 				updateFirework.accept(firework);
 			}
@@ -74,11 +77,17 @@ class EndGameTasks {
 		Bukkit.broadcastMessage(module.formatSystemMessage("Want to support this project and get some extra perks?"));
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			player.spigot().sendMessage(
-					new ComponentBuilder(module.getPrefix() + " ").append("Check out our Patreon: ").color(ChatColor.YELLOW)
+					new ComponentBuilder(module.getPrefix() + " ").append("Check out our Patreon: ")
+							.color(ChatColor.YELLOW)
 							.append("patreon.com/harieo").color(ChatColor.GOLD).underlined(true)
 							.event(new ClickEvent(Action.OPEN_URL, "https://www.patreon.com/harieo"))
 							.create());
 		}
+		Bukkit.broadcastMessage("");
+	}
+
+	private static void checkAchievements(Team winners) {
+
 	}
 
 }

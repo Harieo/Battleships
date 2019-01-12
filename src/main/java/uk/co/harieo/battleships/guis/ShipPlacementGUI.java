@@ -208,6 +208,8 @@ public class ShipPlacementGUI {
 		throw new IllegalStateException("Out of places to put a ship");
 	}
 
+
+
 	/**
 	 * Retrieves the {@link ShipPlacementGUI} created for the specified player or instantiates it if none found
 	 *

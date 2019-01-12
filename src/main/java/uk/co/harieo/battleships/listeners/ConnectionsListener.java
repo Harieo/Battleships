@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import uk.co.harieo.FurBridge.players.PlayerInfo;
@@ -23,6 +24,7 @@ import uk.co.harieo.GamesCore.games.GameState;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.battleships.Battleships;
+import uk.co.harieo.battleships.items.AchievementsItem;
 import uk.co.harieo.battleships.tasks.InGameTasks;
 
 public class ConnectionsListener implements Listener {
@@ -37,7 +39,7 @@ public class ConnectionsListener implements Listener {
 		runnable.runTaskLater(Battleships.getInstance(), 5);
 	}
 
-	@EventHandler (priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		int playerCount = Bukkit.getOnlinePlayers().size();
@@ -46,32 +48,36 @@ public class ConnectionsListener implements Listener {
 		PlayerInfo.loadPlayerInfo(player.getName(), player.getUniqueId()).whenComplete((info, error) -> {
 			if (error != null) {
 				error.printStackTrace();
-				delayedKick(player, ChatColor.RED + "Failed to load your player information, please contact an Administrator");
+				delayedKick(player,
+						ChatColor.RED + "Failed to load your player information, please contact an Administrator");
 				return;
 			}
 
-			InfoCore.get(RankInfo.class, info).whenComplete((rankInfo, error1) -> {
+			InfoCore.get(RankInfo.class, player.getUniqueId()).whenComplete((rankInfo, error1) -> {
 				if (error1 != null) {
 					error1.printStackTrace();
 					delayedKick(player, ChatColor.RED + "Unable to retrieve your rank information");
-					return;
-				}
-
-				if (!rankInfo.hasPermission(Rank.MODERATOR)) { // Staff may not be stopped
-					// Accounts for playerCount + this extra player we're handling
-					if (playerCount >= core.getMaximumPlayers()) {
-						delayedKick(player, ChatColor.RED + "Server is totally full!");
-					} else if (playerCount >= core.getMaximumPlayers() - core.getReservedSlots() && !rankInfo
-							.hasPermission(Rank.PATRON)) {
-						delayedKick(player, "We only have " + ChatColor.GREEN + "Reserved Slots " + ChatColor.WHITE + " left for "
-								+ Rank.PATRON.getPrefix() + ChatColor.WHITE + "s or higher!");
-					} else if (core.getState() != GameState.LOBBY) {
-						delayedKick(player, ChatColor.RED + "This game has already started!");
+				} else if (rankInfo.hasErrorOccurred()) {
+					delayedKick(player,
+							ChatColor.RED + "Unable to retrieve your rank information due to unknown error");
+				} else {
+					if (!rankInfo.hasPermission(Rank.MODERATOR)) { // Staff may not be stopped
+						// Accounts for playerCount + this extra player we're handling
+						if (playerCount >= core.getMaximumPlayers()) {
+							delayedKick(player, ChatColor.RED + "Server is totally full!");
+						} else if (playerCount >= core.getMaximumPlayers() - core.getReservedSlots() && !rankInfo
+								.hasPermission(Rank.PATRON)) {
+							delayedKick(player, "We only have " + ChatColor.GREEN + "Reserved Slots " + ChatColor.WHITE
+									+ " left for "
+									+ Rank.PATRON.getPrefix() + ChatColor.WHITE + "s or higher!");
+						} else if (core.getState() != GameState.LOBBY) {
+							delayedKick(player, ChatColor.RED + "This game has already started!");
+						} else {
+							core.chatModule().announcePlayerJoin(player);
+						}
 					} else {
 						core.chatModule().announcePlayerJoin(player);
 					}
-				} else {
-					core.chatModule().announcePlayerJoin(player);
 				}
 			});
 		});
@@ -80,6 +86,8 @@ public class ConnectionsListener implements Listener {
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setFoodLevel(20);
 		player.setAllowFlight(true);
+
+		setConstantItems(player.getInventory());
 
 		if (core.getState() == GameState.LOBBY) {
 			core.getLobbyScoreboard().render(core, event.getPlayer(), 1);
@@ -97,7 +105,14 @@ public class ConnectionsListener implements Listener {
 
 		if (game.getState() == GameState.IN_GAME) {
 			InGameTasks.checkWinConditions(game); // This will check if any team has no players
+		} else if (game.getState() != GameState.LOBBY && Bukkit.getOnlinePlayers().size() == 0) {
+			Bukkit.getServer().shutdown(); // The server is abandoned, restart it for new players
 		}
+	}
+
+	private void setConstantItems(PlayerInventory inventory) {
+		inventory.clear();
+		inventory.setItem(8, new AchievementsItem().getItem());
 	}
 
 }
