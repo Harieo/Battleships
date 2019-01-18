@@ -113,30 +113,35 @@ public class BattleGUI extends GUI {
 				ChatColor.BLUE + ChatColor.BOLD.toString() + Character.toUpperCase(coordinate.getLetter())
 						+ coordinate.getNumber());
 
+		Battleship ship = map.getShip(coordinate);
+		boolean isShip = ship != null && showShips;
+
 		String status;
 		if (map.isHit(coordinate)) {
 			if (map.getShip(coordinate) != null) {
 				status = ChatColor.GOLD + ChatColor.BOLD.toString() + "Hit";
-				item.setType(Material.GREEN_WOOL);
+				item.setType(Material.RED_GLAZED_TERRACOTTA);
 			} else {
 				status = ChatColor.BLUE + ChatColor.BOLD.toString() + "Miss";
-				item.setType(Material.RED_WOOL);
+				item.setType(Material.BLUE_GLAZED_TERRACOTTA);
 			}
 		} else {
 			status = ChatColor.GREEN + ChatColor.BOLD.toString() + "Not Hit";
+			if (isShip) {
+				item.setType(ship.getMaterial());
+			}
 		}
 
-		Battleship ship = map.getShip(coordinate);
 		String ownedByText = ChatColor.WHITE + "Owned by the " + displayTeam.getFormattedName();
 
 		if (ship != null && showShips) {
-			item.setType(Material.ORANGE_TERRACOTTA);
 			meta.setLore(Arrays.asList("", ship.getFormattedName(), ownedByText, "",
 					ChatColor.WHITE + "Status: " + status));
 		} else {
 			meta.setLore(Arrays.asList("", ownedByText, "",
 					ChatColor.WHITE + "Status: " + status));
 		}
+
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -212,7 +217,9 @@ public class BattleGUI extends GUI {
 	 */
 	private List<Coordinate> getCoordinateSpread(Battleship ship, Coordinate centralCoordinate, boolean isHorizontal) {
 		List<Coordinate> list = new ArrayList<>();
-		list.add(centralCoordinate); // This is included in the spread
+		if (!isTaken(getSlot(centralCoordinate))) {
+			list.add(centralCoordinate); // This is included in the spread
+		}
 
 		boolean goHigher = true;
 		int modifier = 1;
@@ -236,8 +243,7 @@ public class BattleGUI extends GUI {
 
 			goHigher = !goHigher; // This creates an effect that makes the central coordinate central
 
-			if (getCoordinate(slot) == null || !map.isApplicableCoordinate(displayTeam, getCoordinate(slot)) || slot < 0
-					|| slot >= getInventory().getSize() || map.getOwningPlayer(getCoordinate(slot)) != null) {
+			if (isTaken(slot)) {
 				continue;
 			}
 
@@ -245,6 +251,11 @@ public class BattleGUI extends GUI {
 		}
 
 		return list;
+	}
+
+	private boolean isTaken(int slot) {
+		return getCoordinate(slot) == null || !map.isApplicableCoordinate(displayTeam, getCoordinate(slot)) || slot < 0
+				|| slot >= getInventory().getSize() || map.getOwningPlayer(getCoordinate(slot)) != null;
 	}
 
 }

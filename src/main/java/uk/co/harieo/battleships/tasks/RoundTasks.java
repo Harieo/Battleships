@@ -133,9 +133,8 @@ public class RoundTasks {
 					Bukkit.broadcastMessage(module.formatSystemMessage(
 							ChatColor.RED + "A thunderous explosion sounds! " + ChatColor.WHITE + "It appears "
 									+ ChatColor.GREEN +
-									(gamePlayer.isFake() ? "a random " : gamePlayer.toBukkit().getName() + "'s ")
-									+ map.getShip(coordinate).getFormattedName() + ChatColor.WHITE
-									+ " has been destroyed!"));
+									(gamePlayer.isFake() ? "a random ship " : gamePlayer.toBukkit().getName() + "'s ship ")
+									+ ChatColor.WHITE + "has been destroyed!"));
 				}
 			} else {
 				message = ChatColor.RED + "That made a big splash! " + ChatColor.WHITE + "The " + currentlyPlaying

@@ -120,7 +120,7 @@ public class ConnectionsListener implements Listener {
 			if (gamePlayer.hasTeam()) {
 				CACHE.put(event.getPlayer().getUniqueId(), gamePlayer.getTeam());
 			}
-		} else if (game.getState() != GameState.LOBBY && Bukkit.getOnlinePlayers().size() == 0) {
+		} else if (game.getState() != GameState.LOBBY && Bukkit.getOnlinePlayers().size() - 1 == 0) {
 			Bukkit.getServer().shutdown(); // The server is abandoned, restart it for new players
 		}
 	}

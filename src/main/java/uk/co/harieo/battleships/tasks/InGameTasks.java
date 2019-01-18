@@ -76,11 +76,17 @@ public class InGameTasks {
 		});
 		scoreboard.addBlankLine();
 
-		scoreboard.addLine(new ConstantElement(ChatColor.AQUA + ChatColor.BOLD.toString() + "Ships Left"));
+		scoreboard.addLine(new ConstantElement(ChatColor.AQUA + ChatColor.BOLD.toString() + "Enemy Ships"));
 		scoreboard.addLine((Player player) -> {
 			GamePlayer gamePlayer = GamePlayerStore.instance(game).get(player);
 			if (gamePlayer.hasTeam()) {
-				return String.valueOf(ShipStore.get(gamePlayer.getTeam()).getShipsRemaining());
+				Team enemy;
+				if (gamePlayer.getTeam().equals(game.getBlueTeam())) {
+					enemy = game.getRedTeam();
+				} else {
+					enemy = game.getBlueTeam();
+				}
+				return String.valueOf(ShipStore.get(enemy).getShipsRemaining());
 			} else {
 				return "N/A";
 			}

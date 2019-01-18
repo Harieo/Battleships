@@ -21,6 +21,7 @@ import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.timers.GameStartTimer;
+import uk.co.harieo.battleships.commands.ForceStartCommand;
 import uk.co.harieo.battleships.commands.SwitchTeamCommand;
 import uk.co.harieo.battleships.listeners.ChatListener;
 import uk.co.harieo.battleships.listeners.ConnectionsListener;
@@ -58,14 +59,14 @@ public class Battleships extends JavaPlugin implements Game {
 				gameStartTimer.pingTime();
 			}
 		});
-		gameStartTimer.setTimerEndEvent(v -> PreGameTasks.beginPreGame(this)); // The game starts here
+		gameStartTimer.setTimerEndEvent(v -> startGame()); // The game starts here
 
 		chatModule = new BattleshipsChatModule();
 		blueTeam = new Team(this, "Blue Team", ChatColor.BLUE);
 		redTeam = new Team(this, "Red Team", ChatColor.RED);
 
 		registerListeners(new ConnectionsListener(), new MiscListener(), new ChatListener());
-		FurCore.getInstance().registerCommands(new SwitchTeamCommand());
+		FurCore.getInstance().registerCommands(new SwitchTeamCommand(), new ForceStartCommand());
 
 		MapImpl spawnMap = FurCore.getInstance().getPrimaryWorld();
 		if (spawnMap != null) {
@@ -142,6 +143,14 @@ public class Battleships extends JavaPlugin implements Game {
 
 	public BattleshipsMap getMap() {
 		return map;
+	}
+
+	@Override
+	public void startGame() {
+		if (!gameStartTimer.isCancelled()) {
+			gameStartTimer.cancel();
+		}
+		PreGameTasks.beginPreGame(this);
 	}
 
 	@Override
