@@ -4,10 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.GamesCore.chat.ChatModule;
@@ -213,7 +210,7 @@ public class ShipStore {
 	public Map<GamePlayer, Battleship> assignFakeShips() {
 		Battleship[] battleships = Battleship.values();
 		Map<GamePlayer, Battleship> shipsClone = new HashMap<>(ships); // Clone the map so we can remove used values
-		Map<GamePlayer, Battleship> fakeShips = new HashMap<>();
+		Map<GamePlayer, Battleship> fakeShips = new LinkedHashMap<>();
 
 		int quantity = 1;
 		for (int i = 0; i < battleships.length; ) {

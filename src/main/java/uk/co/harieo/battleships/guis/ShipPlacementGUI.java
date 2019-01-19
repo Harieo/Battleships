@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.players.GamePlayer;
+import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.maps.BattleshipsMap;
@@ -57,11 +58,9 @@ public class ShipPlacementGUI {
 				updateAlignmentButton(); // Update the button to show that change
 			} else if (event.getCurrentItem().getType()
 					== Material.LIGHT_BLUE_TERRACOTTA) { // This is the coordinate grid
-				if (hasPlaced) { // If they have already placed, reset so they can replace
-					map.resetCoordinates(player);
-					hasPlaced = false;
-					updateAll();
-				}
+				map.resetCoordinates(GamePlayerStore.instance(Battleships.getInstance()).get((Player) event.getWhoClicked()));
+				updateAll();
+				hasPlaced = false;
 
 				Coordinate coordinate = gui.getCoordinate(event.getSlot());
 				if (!hasPlaced) {
@@ -182,9 +181,14 @@ public class ShipPlacementGUI {
 				horizontal = false;
 			}
 
-			if (gui.canPlaceShip(ship, coordinate, horizontal)) {
+			boolean forceHorizontal = isHorizontal;
+			if (!gui.canPlaceShip(ship, coordinate, forceHorizontal)) {
+				forceHorizontal = !isHorizontal;
+			}
+
+			if (gui.canPlaceShip(ship, coordinate, forceHorizontal)) {
 				Player bukkitPlayer = player.toBukkit();
-				gui.placeShip(player, coordinate, horizontal);
+				gui.placeShip(player, coordinate, forceHorizontal);
 				updateAll();
 				if (bukkitPlayer.isOnline()) {
 					bukkitPlayer.sendMessage(Battleships.getInstance().chatModule().formatSystemMessage(
@@ -196,9 +200,8 @@ public class ShipPlacementGUI {
 			}
 		}
 
-		throw new IllegalStateException("Out of places to put a ship");
+		throw new IllegalStateException("Out of places to put a " + ship.getName() + " on " + team.getTeamName());
 	}
-
 
 
 	/**

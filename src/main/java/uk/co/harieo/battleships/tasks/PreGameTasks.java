@@ -63,9 +63,9 @@ public class PreGameTasks {
 		}
 
 		GenericTimer timer = new GenericTimer(game, 15, end -> {
-			unregisterAllInventories(game);
 			teleportToStart(game);
 			placeFakeShips(game);
+			unregisterAllInventories(game);
 			InGameTasks.beginInGameTasks(game);
 		});
 
@@ -151,7 +151,7 @@ public class PreGameTasks {
 			if (!placementGUI.isPlaced()) {
 				placementGUI.randomlyAssign();
 			}
-			placementGUI.getGui().unregister();
+			//placementGUI.getGui().unregister();
 		}
 	}
 

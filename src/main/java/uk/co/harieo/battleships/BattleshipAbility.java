@@ -1,10 +1,13 @@
 package uk.co.harieo.battleships;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.ships.Battleship;
+import uk.co.harieo.battleships.tasks.InGameTasks;
 
 public enum BattleshipAbility {
 
@@ -12,7 +15,7 @@ public enum BattleshipAbility {
 	AERIAL_RECON("Aerial Reconnaissance", "Show a list of destroyed ships to the activator",
 			Battleship.AIRCRAFT_CARRIER),
 	// Handled in RoundTasks
-	PRESSURE("Pressure under Fire", "Reduce enemy shooting time to 5 seconds for 1 turn", Battleship.DREADNOUGHT),
+	PRESSURE("Pressure under Fire", "Reduce enemy shooting time to 2 seconds for 1 turn", Battleship.DREADNOUGHT),
 	// Handled in RoundTasks
 	SIGNAL_JAMMER("Signal Jammer", "Disrupts enemy chat for 1 turn", Battleship.CRUISER),
 	// Handled in AbilityItem
@@ -107,6 +110,20 @@ public enum BattleshipAbility {
 			redActiveAbilities.add(ability);
 		}
 		usedAbilities.add(player);
+	}
+
+	public static void removeActiveAbility(BattleshipAbility ability, Team team) {
+		Battleships game = Battleships.getInstance();
+		if (team.equals(game.getBlueTeam())) {
+			blueActiveAbilities.remove(ability);
+		} else {
+			redActiveAbilities.remove(ability);
+		}
+	}
+
+	public static void removeActiveAbility(BattleshipAbility ability) {
+		blueActiveAbilities.remove(ability);
+		redActiveAbilities.remove(ability);
 	}
 
 	/**

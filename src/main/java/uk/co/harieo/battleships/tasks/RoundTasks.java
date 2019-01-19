@@ -58,14 +58,14 @@ public class RoundTasks {
 		blueGUI.setFleetItems();
 		bluePassiveGUI.setFleetItems();
 		blueVote = new CoordinateVote(this, game, blueGUI, game.getBlueTeam(),
-				(BattleshipAbility.isAbilityActive(BattleshipAbility.PRESSURE, game.getRedTeam()) ? 5 : 15));
+				(BattleshipAbility.isAbilityActive(BattleshipAbility.PRESSURE, game.getRedTeam()) ? 2 : 15));
 		redGUI.setFleetItems();
 		redPassiveGUI.setFleetItems();
 		redVote = new CoordinateVote(this, game, redGUI, game.getRedTeam(),
-				(BattleshipAbility.isAbilityActive(BattleshipAbility.PRESSURE, game.getBlueTeam()) ? 5 : 15));
+				(BattleshipAbility.isAbilityActive(BattleshipAbility.PRESSURE, game.getBlueTeam()) ? 2 : 15));
 
+		BattleshipAbility.removeActiveAbility(BattleshipAbility.PRESSURE); // Both have been applied so remove all
 		this.currentlyPlaying = game.getBlueTeam();
-		BattleshipAbility.resetAbilities(); // New round, new abilities
 		handleRound();
 	}
 
@@ -127,12 +127,7 @@ public class RoundTasks {
 		}
 
 		new ShootingAnimation(game, coordinate).setOnEnd(end -> {
-			Team enemy;
-			if (currentlyPlaying.equals(game.getBlueTeam())) {
-				enemy = game.getRedTeam();
-			} else {
-				enemy = game.getBlueTeam();
-			}
+			Team enemy = Battleships.getInstance().getEnemyTeam(currentlyPlaying);
 
 			boolean isChatSuppressed = BattleshipAbility.isAbilityActive(BattleshipAbility.SIGNAL_JAMMER, enemy);
 
@@ -181,6 +176,7 @@ public class RoundTasks {
 						"The " + enemy.getFormattedName() + ChatColor.WHITE + " has " + ChatColor.YELLOW
 								+ ChatColor.MAGIC + "0 "
 								+ ChatColor.WHITE + "ships left");
+				BattleshipAbility.removeActiveAbility(BattleshipAbility.SIGNAL_JAMMER, enemy);
 			} else {
 				Bukkit.broadcastMessage(module.formatSystemMessage(
 						"The " + enemy.getFormattedName() + ChatColor.WHITE + " has " + ChatColor.GREEN

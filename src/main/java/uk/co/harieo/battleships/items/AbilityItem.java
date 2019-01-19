@@ -59,7 +59,8 @@ public class AbilityItem extends InteractiveItem {
 	public void onRightClick(PlayerInteractEvent event) {
 		if (mayUpdate) {
 			ChatModule module = Battleships.getInstance().chatModule();
-			Player player = gamePlayer.toBukkit();
+			Player player = event.getPlayer();
+			GamePlayer gamePlayer = GamePlayerStore.instance(game).get(player);
 			if (BattleshipAbility.hasUsedAbility(gamePlayer)) {
 				player.sendMessage(module.formatSystemMessage(ChatColor.RED + "You have already used your ability!"));
 			} else if (!InGameTasks.getTaskManager().getCurrentlyPlaying().equals(gamePlayer.getTeam())) {
@@ -81,9 +82,9 @@ public class AbilityItem extends InteractiveItem {
 						enemy = game.getBlueTeam();
 					}
 
-					for (GamePlayer gamePlayer : enemy.getTeamMembers()) {
+					for (GamePlayer enemyPlayer : enemy.getTeamMembers()) {
 						for (int i = 0; i < 50; i++) {
-							gamePlayer.toBukkit().sendMessage("");
+							enemyPlayer.toBukkit().sendMessage("");
 						}
 					}
 				}

@@ -5,7 +5,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import uk.co.harieo.GamesCore.players.GamePlayer;
+import uk.co.harieo.GamesCore.teams.Team;
+import uk.co.harieo.battleships.BattleshipAbility;
 import uk.co.harieo.battleships.Battleships;
+import uk.co.harieo.battleships.maps.BattleshipsMap;
 import uk.co.harieo.battleships.maps.BattleshipsTile;
 import uk.co.harieo.battleships.maps.Coordinate;
 
@@ -62,7 +66,7 @@ public class ShootingAnimation {
 					World world = spawningLocation.getWorld();
 					world.spawnParticle(Particle.FLAME, spawningLocation, 3);
 					// Play a dramatic sound
-					world.playSound(spawningLocation, Sound.ENTITY_CREEPER_PRIMED, 0.5F, 1);
+					world.playSound(spawningLocation, Sound.BLOCK_LAVA_EXTINGUISH, 0.5F, 1);
 
 					stageOneTiles.replace(tile, height - 1);
 				}
@@ -78,8 +82,11 @@ public class ShootingAnimation {
 		stageTwoTiles.forEach(tile -> {
 			Location location = tile.getLocation();
 			World world = location.getWorld();
+			BattleshipsMap map = game.getMap();
 
-			if (game.getMap().getShip(coordinate) != null) { // We're about to hit a ship, simulate explosion
+			if (BattleshipAbility.isAbilityActive(BattleshipAbility.SIGNAL_JAMMER, coordinate.getTeam())) {
+				location.getBlock().setType(Material.PURPLE_STAINED_GLASS);
+			} else if (map.getShip(coordinate) != null) { // We're about to hit a ship, simulate explosion
 				world.createExplosion(location.getX(), location.getY() + 1, location.getZ(), 3F, false, false);
 				location.getBlock().setType(Material.BLACK_STAINED_GLASS);
 			} else {

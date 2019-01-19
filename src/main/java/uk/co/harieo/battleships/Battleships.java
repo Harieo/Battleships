@@ -141,6 +141,14 @@ public class Battleships extends JavaPlugin implements Game {
 		return blueTeam;
 	}
 
+	public Team getEnemyTeam(Team friendly) {
+		if (friendly.equals(getBlueTeam())) {
+			return getRedTeam();
+		} else {
+			return getBlueTeam();
+		}
+	}
+
 	public BattleshipsMap getMap() {
 		return map;
 	}

@@ -18,6 +18,13 @@ public class AdvertisementUtils {
 	private static final Cache<String, Player> cache = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS)
 			.build();
 
+	/**
+	 * Sends an advertisement for the Patreon to a player directed towards unlocking the specified feature. Caches
+	 * adverts so features can only be advertised once every 15 seconds to prevent spam.
+	 *
+	 * @param player to send the advertisement to
+	 * @param feature that they want to unlock
+	 */
 	public static void sendAdvertisement(Player player, String feature) {
 		Player cached = cache.getIfPresent(feature);
 		if (cached != null && cached.equals(player)) {
