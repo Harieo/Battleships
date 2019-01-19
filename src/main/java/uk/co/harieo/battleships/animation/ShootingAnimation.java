@@ -62,7 +62,7 @@ public class ShootingAnimation {
 					World world = spawningLocation.getWorld();
 					world.spawnParticle(Particle.FLAME, spawningLocation, 3);
 					// Play a dramatic sound
-					world.playSound(spawningLocation, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+					world.playSound(spawningLocation, Sound.ENTITY_CREEPER_PRIMED, 0.5F, 1);
 
 					stageOneTiles.replace(tile, height - 1);
 				}

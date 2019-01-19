@@ -5,14 +5,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 
 import net.md_5.bungee.api.ChatColor;
-import uk.co.harieo.FurCore.scoreboards.ConstantElement;
-import uk.co.harieo.FurCore.scoreboards.GameBoard;
 import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.games.GameState;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
+import uk.co.harieo.GamesCore.scoreboards.ConstantElement;
+import uk.co.harieo.GamesCore.scoreboards.GameBoard;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.Battleships;
+import uk.co.harieo.battleships.items.AbilityItem;
 import uk.co.harieo.battleships.ships.ShipStore;
 
 public class InGameTasks {
@@ -32,8 +33,12 @@ public class InGameTasks {
 		scoreboard = new GameBoard(ChatColor.GOLD + ChatColor.BOLD.toString() + "Battleships", DisplaySlot.SIDEBAR);
 		setupScoreboard(game);
 
-		for (GamePlayer player : GamePlayerStore.instance(game).getAll()) {
-			scoreboard.render(game, player.toBukkit(), 5);
+		for (GamePlayer gamePlayer : GamePlayerStore.instance(game).getAll()) {
+			Player player = gamePlayer.toBukkit();
+			if (gamePlayer.isPlaying()) {
+				scoreboard.render(game, player, 5);
+				player.getInventory().setItem(3, new AbilityItem(3, player).getItem());
+			}
 		}
 
 		Bukkit.getScheduler().runTaskLater(game, bukkitTask -> taskManager = new RoundTasks(game), 20 * 3);

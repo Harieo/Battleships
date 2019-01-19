@@ -9,11 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.Battleships;
+import uk.co.harieo.battleships.guis.ShipChoosingGUI;
 import uk.co.harieo.battleships.maps.BattleshipsMap;
 import uk.co.harieo.battleships.maps.Coordinate;
 
@@ -128,6 +130,37 @@ public class ShipStore {
 	 */
 	public void assignShips() {
 		ships.clear();
+		ChatModule module = Battleships.getInstance().chatModule();
+
+		// Assigns Patron ships so they don't get randomly assigned
+		Map<GamePlayer, Battleship> patronSelections = ShipChoosingGUI.getSelections();
+		for (GamePlayer gamePlayer : patronSelections.keySet()) {
+			Battleship selection = patronSelections.get(gamePlayer);
+
+			int count = 0;
+			for (Battleship battleship : ships.values()) {
+				if (battleship.equals(selection)) {
+					count++;
+				}
+			}
+
+			if (count >= selection.getMaxPerGame()) {
+				Player player = gamePlayer.toBukkit();
+				if (gamePlayer.isPlaying()) {
+					player.sendMessage("");
+					player.sendMessage(module.formatSystemMessage(
+							"We're sorry but the ship you wanted was " + ChatColor.RED + "taken " + ChatColor.WHITE
+									+ "by another " + Rank.PATRON.getPrefix()));
+					player.sendMessage(module.formatSystemMessage(
+							"You will be " + ChatColor.YELLOW + "randomly assigned " + ChatColor.WHITE
+									+ "another ship"));
+					player.sendMessage("");
+				}
+			} else if (gamePlayer.hasTeam() && gamePlayer.getTeam().equals(team)) {
+				ships.put(gamePlayer, selection);
+				destroyed.put(gamePlayer, false);
+			}
+		}
 
 		int i = 0;
 		int quantity = 1;
@@ -135,16 +168,31 @@ public class ShipStore {
 			if (i >= Battleship.values().length) {
 				i = 0; // Start at the beginning
 				Battleships.getInstance().getLogger().warning("Ran out of ships for players, starting from beginning");
+			} else if (ships.containsKey(gamePlayer)) { // They already have a ship
+				continue;
 			}
 
 			Battleship battleship = Battleship.values()[i];
+
+			int count = 0;
+			for (Battleship ship : ships.values()) {
+				if (ship.equals(battleship)) {
+					count++;
+				}
+			}
+
+			if (count >= battleship.getMaxPerGame()) {
+				continue;
+			} else if (count > 0) {
+				quantity += count;
+			}
+
 			ships.put(gamePlayer, battleship);
 			destroyed.put(gamePlayer, false);
 
 			Player player = gamePlayer.toBukkit();
 			if (player.isOnline()) {
 				player.sendMessage(""); // Blank line for aesthetics
-				ChatModule module = Battleships.getInstance().chatModule();
 				player.sendMessage(module.formatSystemMessage(
 						"You are now commander of the team's " + ChatColor.GOLD + ChatColor.BOLD.toString() + battleship
 								.getName()));
@@ -168,7 +216,7 @@ public class ShipStore {
 		Map<GamePlayer, Battleship> fakeShips = new HashMap<>();
 
 		int quantity = 1;
-		for (int i = 0; i < battleships.length;) {
+		for (int i = 0; i < battleships.length; ) {
 			Battleship battleship = battleships[i];
 			GamePlayer matchingKey = null;
 

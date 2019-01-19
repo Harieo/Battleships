@@ -20,7 +20,7 @@ public class MenuOpenerItem extends InteractiveItem {
 
 	public MenuOpenerItem() {
 		super(Material.IRON_SWORD);
-		setName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Open Battle Interface");
+		setName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Open Battle Interface" + InteractiveItem.RIGHT_CLICK_SUFFIX);
 	}
 
 	public void onRightClick(PlayerInteractEvent event) {

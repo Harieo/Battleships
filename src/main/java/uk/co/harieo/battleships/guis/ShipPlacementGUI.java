@@ -55,16 +55,14 @@ public class ShipPlacementGUI {
 			if (event.getSlot() == 26) {
 				isHorizontal = !isHorizontal; // Change to opposite of what this is set to
 				updateAlignmentButton(); // Update the button to show that change
-			} else if (event.getSlot() == 17) {
-				if (hasPlaced) {
+			} else if (event.getCurrentItem().getType()
+					== Material.LIGHT_BLUE_TERRACOTTA) { // This is the coordinate grid
+				if (hasPlaced) { // If they have already placed, reset so they can replace
 					map.resetCoordinates(player);
-					player.toBukkit().sendMessage(module.formatSystemMessage(
-							"Your ship has been removed from the board so that you can replace it!"));
 					hasPlaced = false;
 					updateAll();
 				}
-			} else if (event.getCurrentItem().getType()
-					== Material.LIGHT_BLUE_TERRACOTTA) { // This is the coordinate grid
+
 				Coordinate coordinate = gui.getCoordinate(event.getSlot());
 				if (!hasPlaced) {
 					if (gui.canPlaceShip(ship, coordinate, isHorizontal)) {
@@ -148,11 +146,11 @@ public class ShipPlacementGUI {
 			throw new NullPointerException("Player has not been assigned a Battleship yet");
 		}
 
-		ItemStack shipItem = new ItemStack(Material.ORANGE_TERRACOTTA); // Item to display this player's ship size
+		ItemStack shipItem = new ItemStack(battleship.getMaterial()); // Item to display this player's ship size
 		ItemMeta meta = shipItem.getItemMeta();
 		meta.setDisplayName(battleship.getFormattedName());
 		meta.setLore(Arrays.asList("", ChatColor.WHITE + "This represents the size of your ship on the board",
-				ChatColor.WHITE + "A " + battleship.getFormattedName() + ChatColor.WHITE + " is "
+				ChatColor.WHITE + "The " + battleship.getFormattedName() + ChatColor.WHITE + " is "
 						+ ChatColor.YELLOW + battleship.getSize() + " spaces"));
 		shipItem.setItemMeta(meta);
 
@@ -167,13 +165,6 @@ public class ShipPlacementGUI {
 	 * Sets up the buttons which customise the ship placement for the player
 	 */
 	private void setupButtons() {
-		ItemStack resetButton = new ItemStack(Material.BARRIER);
-		ItemMeta resetMeta = resetButton.getItemMeta();
-		resetMeta.setDisplayName(ChatColor.RED + ChatColor.BOLD.toString() + "Reset Placement");
-		resetMeta.setLore(Arrays.asList("", ChatColor.WHITE + "Resets the position of your ship"));
-		resetButton.setItemMeta(resetMeta);
-		gui.setItem(17, resetButton);
-
 		updateAlignmentButton();
 	}
 

@@ -6,9 +6,15 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.players.GamePlayer;
+import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
+import uk.co.harieo.GamesCore.utils.PlayerUtils;
+import uk.co.harieo.battleships.BattleshipAbility;
 import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.animation.ShootingAnimation;
 import uk.co.harieo.battleships.guis.BattleGUI;
@@ -51,12 +57,15 @@ public class RoundTasks {
 	private void progressRound() {
 		blueGUI.setFleetItems();
 		bluePassiveGUI.setFleetItems();
-		blueVote = new CoordinateVote(this, game, blueGUI, game.getBlueTeam());
+		blueVote = new CoordinateVote(this, game, blueGUI, game.getBlueTeam(),
+				(BattleshipAbility.isAbilityActive(BattleshipAbility.PRESSURE, game.getRedTeam()) ? 5 : 15));
 		redGUI.setFleetItems();
 		redPassiveGUI.setFleetItems();
-		redVote = new CoordinateVote(this, game, redGUI, game.getRedTeam());
+		redVote = new CoordinateVote(this, game, redGUI, game.getRedTeam(),
+				(BattleshipAbility.isAbilityActive(BattleshipAbility.PRESSURE, game.getBlueTeam()) ? 5 : 15));
 
 		this.currentlyPlaying = game.getBlueTeam();
+		BattleshipAbility.resetAbilities(); // New round, new abilities
 		handleRound();
 	}
 
@@ -96,13 +105,18 @@ public class RoundTasks {
 		}
 	}
 
+	private final String obscuredMessage =
+			ChatColor.YELLOW + "*crackle*! " + ChatColor.WHITE + "The " + ChatColor.LIGHT_PURPLE
+					+ ChatColor.MAGIC + "Unknown Team " + ChatColor.WHITE + ".. artillery course... *static*";
+	;
+
 	/**
 	 * Handles the results of a {@link CoordinateVote} and announces the result of the shot
 	 *
 	 * @param team that was voting
 	 * @param coordinate that was voted for
 	 */
-	public void endShotVote(Team team, Coordinate coordinate) {
+	public void endShotVote(Team team, Coordinate coordinate, Map<Player, Coordinate> voters) {
 		ChatModule module = game.chatModule();
 		Bukkit.broadcastMessage(module.formatSystemMessage(
 				"The " + team.getFormattedName() + ChatColor.WHITE + " is targeting sector " + ChatColor.RED
@@ -113,37 +127,6 @@ public class RoundTasks {
 		}
 
 		new ShootingAnimation(game, coordinate).setOnEnd(end -> {
-			BattleshipsMap map = game.getMap();
-			String message;
-
-			map.updateTileIsHit(true, coordinate); // Make sure this coordinate can't be hit again
-			if (map.getShip(coordinate) != null) {
-				message = ChatColor.GREEN + "Direct hit! " + ChatColor.WHITE + "The " + currentlyPlaying
-						.getFormattedName() + ChatColor.WHITE + " hit an enemy ship!";
-				currentlyPlaying.addScore(1); // Every hit is +1 score
-
-				if (ShipStore.get(coordinate.getTeam()).checkIfDestroyed(coordinate)) {
-					// The ship here was destroyed meaning it has to have an owner and a ship
-					GamePlayer gamePlayer = map.getOwningPlayer(coordinate);
-					for (Player player : Bukkit.getOnlinePlayers()) {
-						player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
-					}
-
-					Bukkit.broadcastMessage("");
-					Bukkit.broadcastMessage(module.formatSystemMessage(
-							ChatColor.RED + "A thunderous explosion sounds! " + ChatColor.WHITE + "It appears "
-									+ ChatColor.GREEN +
-									(gamePlayer.isFake() ? "a random ship " : gamePlayer.toBukkit().getName() + "'s ship ")
-									+ ChatColor.WHITE + "has been destroyed!"));
-				}
-			} else {
-				message = ChatColor.RED + "That made a big splash! " + ChatColor.WHITE + "The " + currentlyPlaying
-						.getFormattedName() + ChatColor.WHITE + " missed their shot!";
-			}
-
-			Bukkit.broadcastMessage("");
-			Bukkit.broadcastMessage(module.formatSystemMessage(message));
-
 			Team enemy;
 			if (currentlyPlaying.equals(game.getBlueTeam())) {
 				enemy = game.getRedTeam();
@@ -151,10 +134,59 @@ public class RoundTasks {
 				enemy = game.getBlueTeam();
 			}
 
-			Bukkit.broadcastMessage(module.formatSystemMessage(
-					"The " + enemy.getFormattedName() + ChatColor.WHITE + " has " + ChatColor.GREEN
-							+ ShipStore.get(enemy).getShipsRemaining() + " ships " + ChatColor.WHITE
-							+ "left"));
+			boolean isChatSuppressed = BattleshipAbility.isAbilityActive(BattleshipAbility.SIGNAL_JAMMER, enemy);
+
+			BattleshipsMap map = game.getMap();
+			String message;
+
+			map.updateTileIsHit(true, coordinate); // Make sure this coordinate can't be hit again
+			if (map.getShip(coordinate) != null) {
+				if (isChatSuppressed) {
+					message = obscuredMessage;
+				} else {
+					message = ChatColor.GREEN + "Direct hit! " + ChatColor.WHITE + "The " + currentlyPlaying
+							.getFormattedName() + ChatColor.WHITE + " hit an enemy ship!";
+				}
+
+				currentlyPlaying.addScore(1); // Every hit is +1 score
+
+				if (ShipStore.get(coordinate.getTeam()).checkIfDestroyed(coordinate)) {
+					// The ship here was destroyed meaning it has to have an owner and a ship
+					GamePlayer gamePlayer = map.getOwningPlayer(coordinate);
+					PlayerUtils.playLocalizedSound(Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
+
+					Bukkit.broadcastMessage("");
+					if (!isChatSuppressed) {
+						Bukkit.broadcastMessage(module.formatSystemMessage(
+								ChatColor.RED + "A thunderous explosion sounds! " + ChatColor.WHITE + "It appears "
+										+ ChatColor.GREEN +
+										(gamePlayer.isFake() ? "a random ship "
+												: gamePlayer.toBukkit().getName() + "'s ship ")
+										+ ChatColor.WHITE + "has been destroyed!"));
+					}
+				}
+			} else {
+				if (isChatSuppressed) {
+					message = obscuredMessage;
+				} else {
+					message = ChatColor.RED + "That made a big splash! " + ChatColor.WHITE + "The " + currentlyPlaying
+							.getFormattedName() + ChatColor.WHITE + " missed their shot!";
+				}
+			}
+
+			Bukkit.broadcastMessage("");
+			Bukkit.broadcastMessage(module.formatSystemMessage(message));
+			if (isChatSuppressed) {
+				Bukkit.broadcastMessage(
+						"The " + enemy.getFormattedName() + ChatColor.WHITE + " has " + ChatColor.YELLOW
+								+ ChatColor.MAGIC + "0 "
+								+ ChatColor.WHITE + "ships left");
+			} else {
+				Bukkit.broadcastMessage(module.formatSystemMessage(
+						"The " + enemy.getFormattedName() + ChatColor.WHITE + " has " + ChatColor.GREEN
+								+ ShipStore.get(enemy).getShipsRemaining() + " ships " + ChatColor.WHITE
+								+ "left"));
+			}
 			Bukkit.broadcastMessage("");
 
 			if (InGameTasks.checkWinConditions(game)) {

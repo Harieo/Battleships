@@ -54,12 +54,15 @@ public class PreGameTasks {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			GamePlayer gamePlayer = GamePlayerStore.instance(game).get(player);
 			player.openInventory(ShipPlacementGUI.get(gamePlayer).getInventory()); // Allows players to place their ship
-			player.getInventory().setItem(4, new MenuOpenerItem().getItem()); // Allows players to re-open the GUI
+			PlayerInventory inventory = player.getInventory();
+			inventory.setItem(3, null);
+			inventory.setItem(4, new MenuOpenerItem().getItem()); // Allows players to re-open the GUI
+			inventory.setItem(5, null);
 
 			game.getLobbyScoreboard().cancelScoreboard(player);
 		}
 
-		GenericTimer timer = new GenericTimer(game, 30, end -> {
+		GenericTimer timer = new GenericTimer(game, 15, end -> {
 			unregisterAllInventories(game);
 			teleportToStart(game);
 			placeFakeShips(game);
@@ -67,7 +70,7 @@ public class PreGameTasks {
 		});
 
 		timer.setOnRun(timeLeft -> {
-			if (timeLeft == 15 || timeLeft <= 5) {
+			if (timeLeft == 10 || timeLeft <= 5) {
 				timer.pingTime();
 			}
 		});
@@ -87,7 +90,9 @@ public class PreGameTasks {
 	 * @param game instance that this game is running on
 	 */
 	private static void assignTeams(Battleships game) {
-		Team team = game.getBlueTeam();
+		// Team starts on the team with the lowest player count
+		Team team = game.getBlueTeam().getTeamMembers().size() > game.getRedTeam().getTeamMembers().size() ?
+				game.getRedTeam() : game.getBlueTeam();
 		for (Player bukkitPlayer : Bukkit.getOnlinePlayers()) {
 			GamePlayer player = GamePlayerStore.instance(game).get(bukkitPlayer);
 			if (player.isPlaying()) {

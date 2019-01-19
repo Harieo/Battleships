@@ -28,6 +28,8 @@ import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.items.AchievementsItem;
+import uk.co.harieo.battleships.items.ShipChoosingItem;
+import uk.co.harieo.battleships.items.TeamSelectItem;
 import uk.co.harieo.battleships.tasks.InGameTasks;
 
 public class ConnectionsListener implements Listener {
@@ -114,19 +116,26 @@ public class ConnectionsListener implements Listener {
 		event.setQuitMessage(null);
 		Battleships game = Battleships.getInstance();
 
+		if (game.getState() != GameState.LOBBY && Bukkit.getOnlinePlayers().size() - 1 == 0) {
+			Bukkit.getServer().shutdown(); // The server is abandoned, restart it for new players
+			return;
+		}
+
 		if (game.getState() == GameState.IN_GAME) {
 			InGameTasks.checkWinConditions(game); // This will check if any team has no players
 			GamePlayer gamePlayer = GamePlayerStore.instance(game).get(event.getPlayer());
 			if (gamePlayer.hasTeam()) {
 				CACHE.put(event.getPlayer().getUniqueId(), gamePlayer.getTeam());
 			}
-		} else if (game.getState() != GameState.LOBBY && Bukkit.getOnlinePlayers().size() - 1 == 0) {
-			Bukkit.getServer().shutdown(); // The server is abandoned, restart it for new players
 		}
 	}
 
 	private void setConstantItems(PlayerInventory inventory) {
 		inventory.clear();
+		Battleships game = Battleships.getInstance();
+		inventory.setItem(3, new TeamSelectItem(game, game.getBlueTeam()).getItem());
+		inventory.setItem(4, new ShipChoosingItem().getItem());
+		inventory.setItem(5, new TeamSelectItem(game, game.getRedTeam()).getItem());
 		inventory.setItem(8, new AchievementsItem().getItem());
 	}
 

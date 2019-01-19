@@ -40,6 +40,10 @@ public enum Battleship {
 		return name;
 	}
 
+	public ChatColor getChatColor() {
+		return chatColor;
+	}
+
 	public String getFormattedName() {
 		return chatColor + name;
 	}

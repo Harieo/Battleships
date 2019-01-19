@@ -5,9 +5,6 @@ import org.bukkit.entity.Player;
 import app.ashcon.intake.Command;
 import app.ashcon.intake.bukkit.parametric.annotation.Sender;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ClickEvent.Action;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.FurCore.ranks.RankCache;
 import uk.co.harieo.GamesCore.chat.ChatModule;
@@ -15,6 +12,7 @@ import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.Battleships;
+import uk.co.harieo.battleships.utils.AdvertisementUtils;
 
 public class SwitchTeamCommand {
 
@@ -35,20 +33,15 @@ public class SwitchTeamCommand {
 
 			if (team.getTeamMembers().size() >= game.getMaximumPlayers() / 2) {
 				sender.sendMessage(module.formatSystemMessage(ChatColor.RED + "That team is full!"));
-			} else {
+			} else if (!player.hasTeam() || !player.getTeam().equals(team)) {
+				if (player.hasTeam()) {
+					player.getTeam().removeTeamMember(player);
+				}
 				team.addTeamMember(player);
 				sender.sendMessage(module.formatSystemMessage("You have joined the " + team.getFormattedName()));
 			}
 		} else {
-			sender.sendMessage(module.formatSystemMessage(
-					"You must be a " + Rank.PATRON.getPrefix() + ChatColor.WHITE + " to use this!"));
-			sender.spigot().sendMessage(
-					new ComponentBuilder(module.getPrefix() + " ").append("Want to support the server by becoming a ")
-							.color(
-									ChatColor.WHITE).append(Rank.PATRON.getPrefix()).append("? ").color(ChatColor.WHITE)
-							.append("Visit ").append("patreon.com/harieo").color(ChatColor.GOLD).underlined(true)
-							.event(new ClickEvent(
-									Action.OPEN_URL, "https://www.patreon.com/harieo")).create());
+			AdvertisementUtils.sendAdvertisement(sender, "Choose your Team");
 		}
 	}
 

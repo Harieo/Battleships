@@ -12,7 +12,7 @@ public class AchievementsItem extends InteractiveItem {
 
 	public AchievementsItem() {
 		super(Material.BOOK);
-		setName(ChatColor.GREEN + ChatColor.BOLD.toString() + "Achievements");
+		setName(ChatColor.GREEN + ChatColor.BOLD.toString() + "Achievements" + InteractiveItem.RIGHT_CLICK_SUFFIX);
 	}
 
 	@Override

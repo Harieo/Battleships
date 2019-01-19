@@ -43,11 +43,11 @@ public class CoordinateVote {
 	 * @param gui that should be converted into a vote
 	 * @param team that is voting (not the team that is being shot at)
 	 */
-	public CoordinateVote(RoundTasks tasks, Battleships game, BattleGUI gui, Team team) {
+	public CoordinateVote(RoundTasks tasks, Battleships game, BattleGUI gui, Team team, int time) {
 		this.tasks = tasks;
 		this.game = game;
 		this.gui = gui;
-		this.timer = new GenericTimer(game, 15, end -> endVote());
+		this.timer = new GenericTimer(game, time, end -> endVote());
 		this.team = team;
 
 		BattleshipsMap map = game.getMap();
@@ -132,7 +132,7 @@ public class CoordinateVote {
 			gamePlayer.toBukkit().getOpenInventory().close();
 		}
 
-		tasks.endShotVote(team, getHighestCoordinate());
+		tasks.endShotVote(team, getHighestCoordinate(), playerVotes);
 	}
 
 	/**
