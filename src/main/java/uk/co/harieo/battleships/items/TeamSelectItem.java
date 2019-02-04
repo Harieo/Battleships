@@ -14,6 +14,13 @@ public class TeamSelectItem extends InteractiveItem {
 	private Battleships game;
 	private Team team;
 
+	/**
+	 * An extension of {@link InteractiveItem} that performs the '/team' command to switch teams for the player, rather
+	 * than the player having to type the command out themselves
+	 *
+	 * @param game that is being run
+	 * @param team which team this item can be used to switch to
+	 */
 	public TeamSelectItem(Battleships game, Team team) {
 		super(team.equals(game.getBlueTeam()) ? Material.BLUE_BANNER : Material.RED_BANNER);
 		this.game = game;

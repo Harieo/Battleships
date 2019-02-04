@@ -45,6 +45,13 @@ public class InGameTasks {
 	}
 
 	/**
+	 * @return whether the {@link RoundTasks} manager have been setup yet
+	 */
+	public static boolean hasSetup() {
+		return taskManager != null;
+	}
+
+	/**
 	 * @return the instance of {@link RoundTasks} which is managing all in-game tasks. This may be null as there is a
 	 * 60 tick delay before it is created after calling {@link #beginInGameTasks(Battleships)}.
 	 */

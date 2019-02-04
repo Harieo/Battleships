@@ -8,8 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,6 +34,12 @@ public class ConnectionsListener implements Listener {
 
 	private static Map<UUID, Team> CACHE = new HashMap<>(); // Stores players team when they leave
 
+	/**
+	 * Kicks player with a delay as the cleaner method failed and should not be used unless absolutely necessary
+	 *
+	 * @param player to be kicked
+	 * @param reason to explain why the player is being kicked
+	 */
 	private void delayedKick(Player player, String reason) {
 		BukkitRunnable runnable = new BukkitRunnable() {
 			@Override

@@ -32,6 +32,7 @@ import uk.co.harieo.battleships.tasks.PreGameTasks;
 
 public class Battleships extends JavaPlugin implements Game {
 
+	// IP that displays at the bottom of scoreboards
 	public static final String SCOREBOARD_IP =
 			ChatColor.GOLD +  "play" + ChatColor.DARK_GRAY + "." + ChatColor.YELLOW
 					.toString() + "harieo" + ChatColor.DARK_GRAY + "."
@@ -86,6 +87,9 @@ public class Battleships extends JavaPlugin implements Game {
 		GameStore.instance().registerGame(this);
 	}
 
+	/**
+	 * Creates the Lobby Scoreboard that is displayed to players as they join, before the game has started
+	 */
 	private void setupLobbyScoreboard() {
 		lobbyScoreboard = new GameBoard(ChatColor.GOLD + ChatColor.BOLD.toString() + getGameName(),
 				DisplaySlot.SIDEBAR);
@@ -123,24 +127,44 @@ public class Battleships extends JavaPlugin implements Game {
 				new ConstantElement(SCOREBOARD_IP));
 	}
 
+	/**
+	 * @return the lobby scoreboard, after it has been created with {@link #setupLobbyScoreboard()}
+	 */
+	public GameBoard getLobbyScoreboard() {
+		return lobbyScoreboard;
+	}
+
+	/**
+	 * Registers instances of {@link Listener} in batches
+	 *
+	 * @param listeners to be registered
+	 */
 	private void registerListeners(Listener... listeners) {
 		for (Listener listener : listeners) {
 			Bukkit.getPluginManager().registerEvents(listener, this);
 		}
 	}
 
-	public GameBoard getLobbyScoreboard() {
-		return lobbyScoreboard;
-	}
-
+	/**
+	 * @return the red team
+	 */
 	public Team getRedTeam() {
 		return redTeam;
 	}
 
+	/**
+	 * @return the blue team
+	 */
 	public Team getBlueTeam() {
 		return blueTeam;
 	}
 
+	/**
+	 * Returns the opposite team to the one stated, which is considered that team's enemy
+	 *
+	 * @param friendly to find the opposite team to
+	 * @return the enemy of the specified team, either Red or Blue
+	 */
 	public Team getEnemyTeam(Team friendly) {
 		if (friendly.equals(getBlueTeam())) {
 			return getRedTeam();
@@ -149,6 +173,9 @@ public class Battleships extends JavaPlugin implements Game {
 		}
 	}
 
+	/**
+	 * @return the setup version of the map to be used by the game
+	 */
 	public BattleshipsMap getMap() {
 		return map;
 	}
@@ -216,10 +243,16 @@ public class Battleships extends JavaPlugin implements Game {
 		GAME_NUMBER = i;
 	}
 
+	/**
+	 * @return the game number that has been assigned to this game
+	 */
 	public int getGameNumber() {
 		return GAME_NUMBER;
 	}
 
+	/**
+	 * @return the instance of this class that is used as the plugin
+	 */
 	public static Battleships getInstance() {
 		return INSTANCE;
 	}

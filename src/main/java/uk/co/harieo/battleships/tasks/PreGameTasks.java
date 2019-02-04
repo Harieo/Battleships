@@ -4,10 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.List;
 import java.util.Map;
-import uk.co.harieo.FurBridge.players.PlayerInfo;
-import uk.co.harieo.GamesCore.games.Game;
 import uk.co.harieo.GamesCore.games.GameState;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;

@@ -1,6 +1,5 @@
 package uk.co.harieo.battleships.guis;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -253,6 +252,12 @@ public class BattleGUI extends GUI {
 		return list;
 	}
 
+	/**
+	 * Checks whether a slot is taken by another ship
+	 *
+	 * @param slot to be checked
+	 * @return whether the slot has been taken, meaning it cannot be placed upon
+	 */
 	private boolean isTaken(int slot) {
 		return getCoordinate(slot) == null || !map.isApplicableCoordinate(displayTeam, getCoordinate(slot)) || slot < 0
 				|| slot >= getInventory().getSize() || map.getOwningPlayer(getCoordinate(slot)) != null;

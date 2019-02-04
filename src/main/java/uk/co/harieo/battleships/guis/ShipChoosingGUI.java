@@ -1,6 +1,5 @@
 package uk.co.harieo.battleships.guis;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -11,10 +10,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import uk.co.harieo.FurCore.guis.GUI;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.battleships.BattleshipAbility;
-import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.ships.Battleship;
 
 public class ShipChoosingGUI extends GUI {
@@ -23,6 +22,11 @@ public class ShipChoosingGUI extends GUI {
 
 	private GamePlayer gamePlayer;
 
+	/**
+	 * An extension of {@link GUI} that allows certain players to choose which ship they would like to use in-game
+	 *
+	 * @param gamePlayer that the GUI is being used for
+	 */
 	public ShipChoosingGUI(GamePlayer gamePlayer) {
 		super("Choose your Ship", 6);
 		this.gamePlayer = gamePlayer;
@@ -56,6 +60,14 @@ public class ShipChoosingGUI extends GUI {
 		unregister();
 	}
 
+	/**
+	 * Retrieves the {@link Battleship} represented by a given slot, if any. If the slot does not represent any {@link
+	 * Battleship} then this will return null.
+	 *
+	 * @param slot that is being checked
+	 * @return the {@link Battleship} that this slot represents or null if not applicable
+	 */
+	@Nullable
 	private Battleship getShipFromSlot(int slot) {
 		if (slot < 45 || slot % 2 == 0) {
 			return null;
@@ -69,6 +81,10 @@ public class ShipChoosingGUI extends GUI {
 		}
 	}
 
+	/**
+	 * Updates all relevant items, displaying all the options the player has and a reset button to reset their
+	 * selection
+	 */
 	private void updateItems() {
 		Battleship[] values = Battleship.values();
 		int slot = 0;
@@ -96,6 +112,12 @@ public class ShipChoosingGUI extends GUI {
 		setItem((6 * 9) - 1, resetItem); // Placed on last slot, zero indexed
 	}
 
+	/**
+	 * Gets a formatted instance of {@link ItemStack} that represents the specified {@link Battleship}
+	 *
+	 * @param battleship to get a formatted item for
+	 * @return the formatted item
+	 */
 	private ItemStack getShipItem(Battleship battleship) {
 		BattleshipAbility ability = BattleshipAbility.fromBattleship(battleship);
 
@@ -110,6 +132,13 @@ public class ShipChoosingGUI extends GUI {
 		return item;
 	}
 
+	/**
+	 * Gets a formatted instance of {@link ItemStack} which will act as a button to select the specified {@link
+	 * Battleship} and which displays the selection the player has made
+	 *
+	 * @param battleship to get the button for
+	 * @return a formatted item
+	 */
 	private ItemStack getSelectItem(Battleship battleship) {
 		boolean isSelected = hasMadeSelection(gamePlayer) && getSelection(gamePlayer).equals(battleship);
 		ItemStack item = new ItemStack(isSelected ? Material.GREEN_STAINED_GLASS : Material.BLUE_STAINED_GLASS);
@@ -121,14 +150,31 @@ public class ShipChoosingGUI extends GUI {
 		return item;
 	}
 
+	/**
+	 * Checks whether the specified {@link GamePlayer} has selected their ship or not. Selecting random will count
+	 * as no selection (or false).
+	 *
+	 * @param gamePlayer to check the selection of
+	 * @return whether the specified player has made a ship selection that is not random
+	 */
 	public static boolean hasMadeSelection(GamePlayer gamePlayer) {
 		return selections.containsKey(gamePlayer);
 	}
 
+	/**
+	 * Retrieves whichever {@link Battleship} the player has selected or null if {@link #hasMadeSelection(GamePlayer)}
+	 * is false
+	 *
+	 * @param gamePlayer to get the selection of
+	 * @return the selection the player has made or null if no selection was made
+	 */
 	public static Battleship getSelection(GamePlayer gamePlayer) {
 		return selections.get(gamePlayer);
 	}
 
+	/**
+	 * @return a Map of all players and their corresponding selections
+	 */
 	public static Map<GamePlayer, Battleship> getSelections() {
 		return selections;
 	}

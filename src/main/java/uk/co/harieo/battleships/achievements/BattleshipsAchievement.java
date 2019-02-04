@@ -17,6 +17,14 @@ public enum BattleshipsAchievement implements Achievable {
 	private String id;
 	private int progressMax;
 
+	/**
+	 * An enumerated extension of {@link Achievable} for all achievements that can be earned in this game
+	 *
+	 * @param name of the achievement, displayed to players
+	 * @param description of the achievement, displayed to players
+	 * @param id that will be used to identify the achievement, recognisable by a human developer
+	 * @param progressMax the amount of progress required for this achievement to be completed
+	 */
 	BattleshipsAchievement(String name, String description, String id, int progressMax) {
 		this.name = name;
 		this.description = description;
@@ -24,6 +32,14 @@ public enum BattleshipsAchievement implements Achievable {
 		this.progressMax = progressMax;
 	}
 
+	/**
+	 * An enumerated extension of {@link Achievable} for all achievements that can be earned in this game with {@link
+	 * #progressMax} defaulted to 1
+	 *
+	 * @param name of the achievement, displayed to players
+	 * @param description of the achievement, displayed to players
+	 * @param id that will be used to identify the achievement, recognisable by a human developer
+	 */
 	BattleshipsAchievement(String name, String description, String id) {
 		this(name, description, id, 1);
 	}

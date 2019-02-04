@@ -16,6 +16,12 @@ import uk.co.harieo.battleships.achievements.BattleshipsAchievement;
 
 public class AchievementGUI extends GUI {
 
+	/**
+	 * An extension of {@link GUI} that shows a player's achievements and the progress towards that achievement the
+	 * player has made
+	 *
+	 * @param player who this GUI is being used for
+	 */
 	public AchievementGUI(Player player) {
 		super("Achievements", (BattleshipsAchievement.values().length / 9) + 1);
 		InfoCore.get(AchievementsCore.class, player.getUniqueId()).whenComplete((achievementsInfo, error1) -> {

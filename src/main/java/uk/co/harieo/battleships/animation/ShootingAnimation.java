@@ -5,8 +5,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.function.Consumer;
-import uk.co.harieo.GamesCore.players.GamePlayer;
-import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.BattleshipAbility;
 import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.maps.BattleshipsMap;
@@ -25,6 +23,13 @@ public class ShootingAnimation {
 
 	private boolean stageOneOver = false; // Prevents duplicate method calls
 
+	/**
+	 * A construction that allows for the sequential animation of an artillery shell being fired at a given coordinate.
+	 * The sequence will start immediately upon instantiation as no system requires it to be delayed.
+	 *
+	 * @param game that is being run
+	 * @param coordinate that is being hit
+	 */
 	public ShootingAnimation(Battleships game, Coordinate coordinate) {
 		this.game = game;
 		this.coordinate = coordinate;
@@ -101,6 +106,11 @@ public class ShootingAnimation {
 		}
 	}
 
+	/**
+	 * A Consumer that is accepted when the sequence has completely ended
+	 *
+	 * @param onEnd a function to be performed at this end of this sequence
+	 */
 	public void setOnEnd(Consumer<Void> onEnd) {
 		this.onEnd = onEnd;
 	}

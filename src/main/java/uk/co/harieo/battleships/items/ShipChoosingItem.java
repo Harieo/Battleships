@@ -17,6 +17,9 @@ import uk.co.harieo.battleships.utils.AdvertisementUtils;
 
 public class ShipChoosingItem extends InteractiveItem {
 
+	/**
+	 * An extension of {@link InteractiveItem} which opens {@link ShipChoosingGUI} for the player
+	 */
 	public ShipChoosingItem() {
 		super(Material.EMERALD);
 		setName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Choose your Ship" + InteractiveItem.RIGHT_CLICK_SUFFIX);

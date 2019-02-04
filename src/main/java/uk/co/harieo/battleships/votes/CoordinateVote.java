@@ -1,6 +1,5 @@
 package uk.co.harieo.battleships.votes;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,7 +12,6 @@ import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.timers.GenericTimer;
-import uk.co.harieo.GamesCore.voting.Vote;
 import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.guis.BattleGUI;
 import uk.co.harieo.battleships.maps.BattleshipsMap;

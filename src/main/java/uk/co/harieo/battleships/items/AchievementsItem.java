@@ -10,6 +10,9 @@ import uk.co.harieo.battleships.guis.AchievementGUI;
 
 public class AchievementsItem extends InteractiveItem {
 
+	/**
+	 * An extension of {@link InteractiveItem} that displays {@link AchievementGUI} to the player
+	 */
 	public AchievementsItem() {
 		super(Material.BOOK);
 		setName(ChatColor.GREEN + ChatColor.BOLD.toString() + "Achievements" + InteractiveItem.RIGHT_CLICK_SUFFIX);

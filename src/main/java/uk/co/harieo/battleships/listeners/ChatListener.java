@@ -8,7 +8,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.FurCore.ranks.RankCache;
-import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.games.GameState;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.players.GamePlayerStore;

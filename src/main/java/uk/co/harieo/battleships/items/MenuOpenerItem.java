@@ -18,11 +18,16 @@ import uk.co.harieo.battleships.tasks.RoundTasks;
 
 public class MenuOpenerItem extends InteractiveItem {
 
+	/**
+	 * An extension of {@link InteractiveItem} that opens the relevant GUI based on the {@link GameState} in the event
+	 * that the player has closed it
+	 */
 	public MenuOpenerItem() {
 		super(Material.IRON_SWORD);
 		setName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Open Battle Interface" + InteractiveItem.RIGHT_CLICK_SUFFIX);
 	}
 
+	@Override
 	public void onRightClick(PlayerInteractEvent event) {
 		Battleships game = Battleships.getInstance();
 		ChatModule module = game.chatModule();

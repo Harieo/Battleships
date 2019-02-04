@@ -6,12 +6,9 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import uk.co.harieo.GamesCore.chat.ChatModule;
 import uk.co.harieo.GamesCore.players.GamePlayer;
-import uk.co.harieo.GamesCore.players.GamePlayerStore;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.GamesCore.utils.PlayerUtils;
 import uk.co.harieo.battleships.BattleshipAbility;
@@ -81,6 +78,11 @@ public class RoundTasks {
 		Bukkit.broadcastMessage("");
 
 		if (currentlyPlaying.equals(game.getBlueTeam())) {
+			if (BattleshipAbility.isAbilityActive(BattleshipAbility.PRESSURE, game.getRedTeam())) {
+				blueVote.getTimer().setTimeLeft(2);
+				BattleshipAbility.removeActiveAbility(BattleshipAbility.PRESSURE, game.getRedTeam());
+			}
+
 			for (GamePlayer gamePlayer : currentlyPlaying.getTeamMembers()) {
 				Player player = gamePlayer.toBukkit();
 				player.openInventory(blueGUI.getInventory());
@@ -92,6 +94,11 @@ public class RoundTasks {
 			}
 			blueVote.beginVote();
 		} else {
+			if (BattleshipAbility.isAbilityActive(BattleshipAbility.PRESSURE, game.getBlueTeam())) {
+				redVote.getTimer().setTimeLeft(2);
+				BattleshipAbility.removeActiveAbility(BattleshipAbility.PRESSURE, game.getBlueTeam());
+			}
+
 			for (GamePlayer gamePlayer : currentlyPlaying.getTeamMembers()) {
 				Player player = gamePlayer.toBukkit();
 				player.openInventory(redGUI.getInventory());
@@ -199,10 +206,19 @@ public class RoundTasks {
 		});
 	}
 
+	/**
+	 * @return the team that is currently shooting
+	 */
 	public Team getCurrentlyPlaying() {
 		return currentlyPlaying;
 	}
 
+	/**
+	 * Retrieves the targeting form of the {@link BattleGUI} for the specified team, either Red or Blue
+	 *
+	 * @param team to get the GUI for
+	 * @return the matching instance of {@link BattleGUI}
+	 */
 	public BattleGUI getGUI(Team team) {
 		if (team.equals(game.getBlueTeam())) {
 			return blueGUI;
@@ -211,6 +227,13 @@ public class RoundTasks {
 		}
 	}
 
+	/**
+	 * Retrieves the passive, a display of friendly ships that cannot be targeted, form of the {@link BattleGUI} for the
+	 * specified team, either Red or Blue
+	 *
+	 * @param team to retrieve the matching GUI for
+	 * @return the matching instance of {@link BattleGUI}
+	 */
 	public BattleGUI getPassiveGUI(Team team) {
 		if (team.equals(game.getBlueTeam())) {
 			return bluePassiveGUI;
@@ -219,6 +242,12 @@ public class RoundTasks {
 		}
 	}
 
+	/**
+	 * Gets the instance of {@link CoordinateVote} that the specified team is using to vote on where to target
+	 *
+	 * @param team to get the instance for
+	 * @return the matching instance of {@link CoordinateVote}
+	 */
 	public CoordinateVote getVote(Team team) {
 		if (team.equals(game.getBlueTeam())) {
 			return blueVote;

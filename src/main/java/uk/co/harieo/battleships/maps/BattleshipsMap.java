@@ -5,7 +5,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +20,13 @@ public class BattleshipsMap {
 	private Location blueSpawn;
 	private Location redSpawn;
 
+	/**
+	 * This is a representation of all data in a game map; including coordinates, spawns and block locations.
+	 *
+	 * @param map that has been parsed by the {@link MapLoader} and contains saved map data in its rawest form
+	 * @param blueSpawn that the blue team can spawn on when the game starts
+	 * @param redSpawn that the red team can spawn on when the game starts
+	 */
 	BattleshipsMap(MapImpl map, Location blueSpawn, Location redSpawn) {
 		this.map = map;
 		this.blueSpawn = blueSpawn;
@@ -278,6 +284,13 @@ public class BattleshipsMap {
 		return highest;
 	}
 
+	/**
+	 * Compares a {@link Coordinate} with a {@link BattleshipsTile} to make sure all their values match
+	 *
+	 * @param coordinate to match to the tile
+	 * @param tile to match to the coordinate
+	 * @return whether the tile represents the same values as the coordinate
+	 */
 	private boolean matchesCoordinate(Coordinate coordinate, BattleshipsTile tile) {
 		return tile.getLetter() == coordinate.getLetter() && tile.getNumber() == coordinate.getNumber()
 				&& tile.getTeam().equals(coordinate.getTeam());

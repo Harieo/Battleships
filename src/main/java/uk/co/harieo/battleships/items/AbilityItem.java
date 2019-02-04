@@ -29,8 +29,15 @@ public class AbilityItem extends InteractiveItem {
 	private BattleshipAbility ability;
 	private GamePlayer gamePlayer;
 
-	private boolean mayUpdate;
+	private boolean mayUpdate; // Prevents item updates if an error occurred during item initialization
 
+	/**
+	 * An extension of {@link InteractiveItem} that is used to activate the player's {@link BattleshipAbility} whilst
+	 * checking whether the action is legal
+	 *
+	 * @param slot that this item goes into based on the {@link org.bukkit.inventory.PlayerInventory}
+	 * @param player that this item belongs to
+	 */
 	public AbilityItem(int slot, Player player) {
 		super(Material.BLAZE_POWDER);
 		this.slot = slot;
@@ -57,7 +64,7 @@ public class AbilityItem extends InteractiveItem {
 
 	@Override
 	public void onRightClick(PlayerInteractEvent event) {
-		if (mayUpdate) {
+		if (mayUpdate && InGameTasks.hasSetup()) {
 			ChatModule module = Battleships.getInstance().chatModule();
 			Player player = event.getPlayer();
 			GamePlayer gamePlayer = GamePlayerStore.instance(game).get(player);
@@ -120,6 +127,10 @@ public class AbilityItem extends InteractiveItem {
 		}
 	}
 
+	/**
+	 * Update the name of this item depending on whether the player may use their {@link BattleshipAbility}, depending
+	 * on whether {@link #mayUpdate} is true
+	 */
 	private void updateName() {
 		if (mayUpdate) {
 			String name;
@@ -140,6 +151,9 @@ public class AbilityItem extends InteractiveItem {
 		}
 	}
 
+	/**
+	 * Updates the lore of this item depending on whether {@link #mayUpdate} is true
+	 */
 	private void updateLore() {
 		if (mayUpdate) {
 			setLore(Arrays.asList("", ChatColor.GRAY + ability.getDescription(), "",

@@ -24,6 +24,13 @@ import uk.co.harieo.battleships.achievements.AchievementValidator;
 
 class EndGameTasks {
 
+	/**
+	 * Begins the End Game tasks which announce winners, scan for achievements and restart the server
+	 *
+	 * @param game that is being run
+	 * @param winners who have won the game
+	 * @param scoreWin whether the victory was for highest score (true) or by enemy forfeit (false)
+	 */
 	static void beginEndGame(Battleships game, Team winners, boolean scoreWin) {
 		game.getLogger().info("Beginning end-game tasks");
 		game.setState(GameState.END_GAME);
@@ -54,12 +61,22 @@ class EndGameTasks {
 		endTimer.beginTimer();
 	}
 
+	/**
+	 * Closes all open inventories for all players
+	 */
 	private static void closeAllInventories() {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			player.getOpenInventory().close();
 		}
 	}
 
+	/**
+	 * Creates a single firework for each individual member of the winning team that is still online. The specified
+	 * {@link Consumer<Firework>} is accepted to edit the spawned {@link Firework} metadata.
+	 *
+	 * @param winners who have won the game and will have a {@link Firework} spawned for them
+	 * @param updateFirework to edit the spawned instance of {@link Firework} after it is created
+	 */
 	private static void spawnFireworks(Team winners, Consumer<Firework> updateFirework) {
 		for (GamePlayer gamePlayer : winners.getTeamMembers()) {
 			Player player = gamePlayer.toBukkit();
@@ -70,6 +87,11 @@ class EndGameTasks {
 		}
 	}
 
+	/**
+	 * Broadcasts an advert to all players advertising the Patreon for kind donations to server costs
+	 *
+	 * @param game that is being run
+	 */
 	private static void broadcastAdvert(Battleships game) {
 		ChatModule module = game.chatModule();
 		Bukkit.broadcastMessage("");

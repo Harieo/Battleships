@@ -6,12 +6,10 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.FurBridge.sql.InfoCore;
-import uk.co.harieo.FurCore.achievements.Achievable;
 import uk.co.harieo.FurCore.achievements.AchievementsCore;
 import uk.co.harieo.FurCore.ranks.RankCache;
 import uk.co.harieo.GamesCore.chat.ChatModule;
@@ -25,6 +23,13 @@ import uk.co.harieo.battleships.tasks.PreGameTasks;
 
 public class AchievementValidator {
 
+	/**
+	 * Checks through every player to see if any meet the conditions to unlock one of the {@link
+	 * BattleshipsAchievement} enumerations
+	 *
+	 * @param winners who won the game
+	 * @param scoreWin whether the game was won by score (true) or by enemy forfeit (false)
+	 */
 	public static void checkEndGameAchievements(Team winners, boolean scoreWin) {
 		BattleshipsMap map = Battleships.getInstance().getMap();
 		for (GamePlayer gamePlayer : GamePlayerStore.instance(Battleships.getInstance()).getAll()) {
@@ -121,6 +126,12 @@ public class AchievementValidator {
 		}
 	}
 
+	/**
+	 * Sends a message to the specified player showing that they meet the conditions to unlock an achievement
+	 *
+	 * @param achievement that has been unlocked
+	 * @param player who unlocked the achievement
+	 */
 	private static void sendAchievementUnlockedMessage(BattleshipsAchievement achievement, Player player) {
 		ChatModule module = Battleships.getInstance().chatModule();
 		player.sendMessage("");
@@ -131,13 +142,20 @@ public class AchievementValidator {
 		player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
 	}
 
+	/**
+	 * Increases the progress made towards an {@link BattleshipsAchievement} for the specified player by 1
+	 *
+	 * @param player to increment the progress for
+	 * @param core a formed instance of {@link AchievementsCore} that allows database access
+	 * @param achievement to increment the progress for
+	 */
 	private static void incrementProgress(Player player, AchievementsCore core, BattleshipsAchievement achievement) {
 		core.setProgressMade(achievement, core.getProgressMade(achievement) + 1).whenComplete((success, error) -> {
 			if (error != null) {
 				error.printStackTrace();
-				player.sendMessage(ChatColor.RED + "An error occurred giving you an achievement!");
+				player.sendMessage(ChatColor.RED + "An error occurred increasing your achievement progress");
 			} else if (!success) {
-				player.sendMessage(ChatColor.RED + "An error occurred giving you an achievement");
+				player.sendMessage(ChatColor.RED + "An error occurred increasing your achievement progress!");
 			}
 		});
 	}

@@ -1,13 +1,10 @@
 package uk.co.harieo.battleships;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import uk.co.harieo.GamesCore.players.GamePlayer;
 import uk.co.harieo.GamesCore.teams.Team;
 import uk.co.harieo.battleships.ships.Battleship;
-import uk.co.harieo.battleships.tasks.InGameTasks;
 
 public enum BattleshipAbility {
 
@@ -26,10 +23,10 @@ public enum BattleshipAbility {
 	// As they only have 1 ability, no point storing the ability that was used
 	private static final List<GamePlayer> usedAbilities = new ArrayList<>();
 
-	private String name;
-	private String description;
-	private Battleship battleship;
-	private boolean showAbility;
+	private String name; // The name shown to the player
+	private String description; // A short description of this ability's function
+	private Battleship battleship; // The battleship that this ability it used with
+	private boolean showAbility; // Whether the activation of this ability should be broadcast to the enemy team
 
 	BattleshipAbility(String name, String description, Battleship attachedBattleship, boolean shouldShowAbility) {
 		this.name = name;

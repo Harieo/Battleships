@@ -16,6 +16,14 @@ public class Coordinate {
 	private int number;
 	private Team team;
 
+	/**
+	 * A representation of a single coordinate displayed on the game board with number on the X axis and letter on the Y
+	 * axis. This does not represent the {@link #toString()} display.
+	 *
+	 * @param letter as the Y axis
+	 * @param number as the X axis
+	 * @param team to indicate which side of the board this coordinate is on
+	 */
 	private Coordinate(char letter, int number, Team team) {
 		this.letter = letter;
 		this.number = number;

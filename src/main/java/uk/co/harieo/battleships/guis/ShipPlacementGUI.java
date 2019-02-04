@@ -31,9 +31,15 @@ public class ShipPlacementGUI {
 	private BattleshipsMap map;
 	private Battleship ship;
 
-	private boolean isHorizontal = true;
-	private boolean hasPlaced = false;
+	private boolean isHorizontal = true; // Whether the ship is being placed horizontally or vertically
+	private boolean hasPlaced = false; // Whether this player has placed their ship
 
+	/**
+	 * A handler for {@link BattleGUI} that allows a player to place their ship while updating the position of other
+	 * team ships as they are being placed
+	 *
+	 * @param player that this GUI is going to be used for
+	 */
 	private ShipPlacementGUI(GamePlayer player) {
 		// We're throwing exceptions as these are game breaking errors
 		this.player = player;

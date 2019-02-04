@@ -1,6 +1,5 @@
 package uk.co.harieo.battleships.ships;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -207,6 +206,12 @@ public class ShipStore {
 		}
 	}
 
+	/**
+	 * Assigns a fake {@link GamePlayer} to {@link Battleship} enumerations that have not been assigned a real {@link
+	 * GamePlayer} and returns a Map of the new fake ships.
+	 *
+	 * @return a Map of fake {@link GamePlayer} instances to previously unassigned {@link Battleship} enumerations
+	 */
 	public Map<GamePlayer, Battleship> assignFakeShips() {
 		Battleship[] battleships = Battleship.values();
 		Map<GamePlayer, Battleship> shipsClone = new HashMap<>(ships); // Clone the map so we can remove used values
