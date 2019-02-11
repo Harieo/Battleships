@@ -151,7 +151,8 @@ public class ShipPlacementGUI {
 			throw new NullPointerException("Player has not been assigned a Battleship yet");
 		}
 
-		ItemStack shipItem = new ItemStack(battleship.getMaterial()); // Item to display this player's ship size
+		ItemStack shipItem = new ItemStack(Material.STAINED_CLAY); // Item to display this player's ship size
+		shipItem.setDurability(battleship.getDurabilityValue());
 		ItemMeta meta = shipItem.getItemMeta();
 		meta.setDisplayName(battleship.getFormattedName());
 		meta.setLore(Arrays.asList("", ChatColor.WHITE + "This represents the size of your ship on the board",

@@ -122,7 +122,8 @@ public class ShipChoosingGUI extends GUI {
 	private ItemStack getShipItem(Battleship battleship) {
 		BattleshipAbility ability = BattleshipAbility.fromBattleship(battleship);
 
-		ItemStack item = new ItemStack(battleship.getMaterial());
+		ItemStack item = new ItemStack(Material.STAINED_CLAY);
+		item.setDurability(battleship.getDurabilityValue());
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(battleship.getFormattedName());
 		meta.setLore(
