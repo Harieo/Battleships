@@ -62,7 +62,7 @@ public class ShipPlacementGUI {
 			if (event.getSlot() == 26) {
 				isHorizontal = !isHorizontal; // Change to opposite of what this is set to
 				updateAlignmentButton(); // Update the button to show that change
-			} else if (event.getCurrentItem().getDurability() != (byte) 3) { // This is the coordinate grid
+			} else if (event.getCurrentItem().getDurability() == (byte) 3) { // This is the coordinate grid
 				map.resetCoordinates(
 						GamePlayerStore.instance(Battleships.getInstance()).get((Player) event.getWhoClicked()));
 				updateAll();
