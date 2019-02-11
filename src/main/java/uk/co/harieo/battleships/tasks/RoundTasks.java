@@ -155,7 +155,7 @@ public class RoundTasks {
 				if (ShipStore.get(coordinate.getTeam()).checkIfDestroyed(coordinate)) {
 					// The ship here was destroyed meaning it has to have an owner and a ship
 					GamePlayer gamePlayer = map.getOwningPlayer(coordinate);
-					PlayerUtils.playLocalizedSound(Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
+					PlayerUtils.playLocalizedSound(Sound.ENTITY_LIGHTNING_THUNDER, 1, 1);
 
 					Bukkit.broadcastMessage("");
 					if (!isChatSuppressed) {
@@ -198,10 +198,10 @@ public class RoundTasks {
 
 			BukkitScheduler scheduler = Bukkit.getScheduler();
 			if (currentlyPlaying.equals(game.getRedTeam())) { // Red team goes last so the round progresses here
-				scheduler.runTaskLater(game, task -> progressRound(), 20 * 3);
+				scheduler.runTaskLater(game, this::progressRound, 20 * 3);
 			} else {
 				currentlyPlaying = game.getRedTeam();
-				scheduler.runTaskLater(game, task -> handleRound(), 20 * 3);
+				scheduler.runTaskLater(game, this::handleRound, 20 * 3);
 			}
 		});
 	}

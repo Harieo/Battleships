@@ -72,8 +72,8 @@ public class Battleships extends JavaPlugin implements Game {
 		MapImpl spawnMap = FurCore.getInstance().getPrimaryWorld();
 		if (spawnMap != null) {
 			World world = spawnMap.getWorld();
-			world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-			world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+			world.setGameRuleValue("doDaylightCycle", "false");
+			world.setGameRuleValue("doMobSpawning", "false");
 			world.setStorm(false); // Just in-case the map was loaded from an external server
 			getLogger().info("Set game rules for spawn world");
 

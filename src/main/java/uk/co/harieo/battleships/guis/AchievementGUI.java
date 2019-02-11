@@ -37,20 +37,21 @@ public class AchievementGUI extends GUI {
 					BattleshipsAchievement achievement = achievements[i];
 					int progress = achievementsInfo.getProgressMade(achievement);
 
-					Material material;
+					byte clayColor;
 					ChatColor color;
 					if (progress <= 0) {
-						material = Material.RED_TERRACOTTA;
+						clayColor = (byte) 14;
 						color = ChatColor.RED;
 					} else if (progress < achievement.getProgressMax()) {
-						material = Material.YELLOW_TERRACOTTA;
+						clayColor = (byte) 4;
 						color = ChatColor.YELLOW;
 					} else {
-						material = Material.GREEN_TERRACOTTA;
+						clayColor = (byte) 13;
 						color = ChatColor.GREEN;
 					}
 
-					ItemStack item = new ItemStack(material);
+					ItemStack item = new ItemStack(Material.STAINED_CLAY);
+					item.setDurability(clayColor);
 					ItemMeta meta = item.getItemMeta();
 					meta.setDisplayName(color + ChatColor.BOLD.toString() + achievement.getName());
 					meta.setLore(Arrays.asList("", ChatColor.GRAY + achievement.getDescription(), "",

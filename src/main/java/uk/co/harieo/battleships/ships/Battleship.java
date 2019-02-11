@@ -5,16 +5,16 @@ import org.bukkit.Material;
 
 public enum Battleship {
 
-	AIRCRAFT_CARRIER("Aircraft Carrier", 5, ChatColor.RED, Material.GRAY_TERRACOTTA),
-	DREADNOUGHT("Dreadnought", 4, ChatColor.LIGHT_PURPLE, Material.PURPLE_TERRACOTTA),
-	CRUISER("Cruiser", 3, ChatColor.GOLD, Material.ORANGE_TERRACOTTA),
-	FRIGATE("Frigate", 2, 2, ChatColor.YELLOW, Material.YELLOW_TERRACOTTA);
+	AIRCRAFT_CARRIER("Aircraft Carrier", 5, ChatColor.RED, (byte) 7),
+	DREADNOUGHT("Dreadnought", 4, ChatColor.LIGHT_PURPLE, (byte) 10),
+	CRUISER("Cruiser", 3, ChatColor.GOLD, (byte) 1),
+	FRIGATE("Frigate", 2, 2, ChatColor.YELLOW, (byte) 4);
 
 	private String name;
 	private int size;
 	private int max;
 	private ChatColor chatColor;
-	private Material material;
+	private byte materialColor;
 
 	/**
 	 * A ship holding values for use in-game
@@ -23,14 +23,14 @@ public enum Battleship {
 	 * @param size of the ship (how many squares it takes up)
 	 * @param maxPerGame how many of this ship may be present in 1 game
 	 * @param chatColor to be applied to the name to create {@link #getFormattedName()}
-	 * @param material that the ship should be displayed as in GUIs
+	 * @param durability to be applied to color the stained clay material
 	 */
-	Battleship(String name, int size, int maxPerGame, ChatColor chatColor, Material material) {
+	Battleship(String name, int size, int maxPerGame, ChatColor chatColor, byte durability) {
 		this.name = name;
 		this.size = size;
 		this.max = maxPerGame;
 		this.chatColor = chatColor;
-		this.material = material;
+		this.materialColor = durability;
 	}
 
 	/**
@@ -39,10 +39,10 @@ public enum Battleship {
 	 * @param name of the ship to be displayed to players
 	 * @param size of the ship (how many squares it takes up)
 	 * @param chatColor to be applied to the name to create {@link #getFormattedName()}
-	 * @param material that the ship should be displayed as in GUIs
+	 * @param durability to be applied to color the stained clay material
 	 */
-	Battleship(String name, int size, ChatColor chatColor, Material material) {
-		this(name, size, 1, chatColor, material);
+	Battleship(String name, int size, ChatColor chatColor, byte durability) {
+		this(name, size, 1, chatColor, durability);
 	}
 
 	/**
@@ -83,8 +83,16 @@ public enum Battleship {
 	/**
 	 * @return the material that this ship should be shown as in GUIs
 	 */
+	@Deprecated
 	public Material getMaterial() {
-		return material;
+		return Material.STAINED_CLAY;
+	}
+
+	/**
+	 * @return the durability value which represents the clay color of this ship
+	 */
+	public byte getDurabilityValue() {
+		return materialColor;
 	}
 
 }

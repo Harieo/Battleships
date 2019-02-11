@@ -103,7 +103,7 @@ public class AbilityItem extends InteractiveItem {
 									+ ChatColor.GOLD + ability.getName() + ChatColor.WHITE + " ability!"));
 					Bukkit.broadcastMessage(module.formatSystemMessage(ChatColor.GRAY + ability.getDescription()));
 					Bukkit.broadcastMessage("");
-					PlayerUtils.playLocalizedSound(Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
+					PlayerUtils.playLocalizedSound(Sound.ENTITY_ENDERDRAGON_GROWL, 1, 1);
 				}
 
 				updateName(); // Show that the ability has been activated to the user

@@ -106,7 +106,8 @@ public class BattleGUI extends GUI {
 	 * @return the created item
 	 */
 	public ItemStack createItem(Coordinate coordinate) {
-		ItemStack item = new ItemStack(Material.LIGHT_BLUE_TERRACOTTA);
+		ItemStack item = new ItemStack(Material.STAINED_CLAY);
+		item.setDurability((byte) 3);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(
 				ChatColor.BLUE + ChatColor.BOLD.toString() + Character.toUpperCase(coordinate.getLetter())
@@ -127,7 +128,7 @@ public class BattleGUI extends GUI {
 		} else {
 			status = ChatColor.GREEN + ChatColor.BOLD.toString() + "Not Hit";
 			if (isShip) {
-				item.setType(ship.getMaterial());
+				item.setDurability(ship.getDurabilityValue());
 			}
 		}
 

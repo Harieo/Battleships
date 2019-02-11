@@ -22,7 +22,8 @@ public class TeamSelectItem extends InteractiveItem {
 	 * @param team which team this item can be used to switch to
 	 */
 	public TeamSelectItem(Battleships game, Team team) {
-		super(team.equals(game.getBlueTeam()) ? Material.BLUE_BANNER : Material.RED_BANNER);
+		super(Material.BANNER);
+		getItem().setDurability(team.equals(game.getBlueTeam()) ? (byte) 4 : (byte) 1);
 		this.game = game;
 		this.team = team;
 		setName(ChatColor.WHITE + "Join the " + team.getFormattedName() + InteractiveItem.RIGHT_CLICK_SUFFIX);

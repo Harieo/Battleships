@@ -1,10 +1,12 @@
 package uk.co.harieo.battleships.animation;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import net.minecraft.server.v1_12_R1.BlockStainedGlass;
 import uk.co.harieo.battleships.BattleshipAbility;
 import uk.co.harieo.battleships.Battleships;
 import uk.co.harieo.battleships.maps.BattleshipsMap;
@@ -89,15 +91,22 @@ public class ShootingAnimation {
 			World world = location.getWorld();
 			BattleshipsMap map = game.getMap();
 
+			Block block = location.getBlock();
+			if (block.getType() != Material.STAINED_GLASS) {
+				Battleships.getInstance().getLogger()
+						.warning("Block at " + location.toString() + " was not stained glass");
+				return;
+			}
+
 			if (BattleshipAbility.isAbilityActive(BattleshipAbility.SIGNAL_JAMMER, coordinate.getTeam())) {
-				location.getBlock().setType(Material.PURPLE_STAINED_GLASS);
+				block.setData((byte) 10);
 			} else if (map.getShip(coordinate) != null) { // We're about to hit a ship, simulate explosion
 				world.createExplosion(location.getX(), location.getY() + 1, location.getZ(), 3F, false, false);
-				location.getBlock().setType(Material.BLACK_STAINED_GLASS);
+				block.setData((byte) 15);
 			} else {
 				world.spawnParticle(Particle.WATER_SPLASH, tile.getLocation().clone().add(0.25, 1, 0.75), 100, 2, 5, 2);
 				world.playSound(location, Sound.ENTITY_BOAT_PADDLE_WATER, 1, 1);
-				location.getBlock().setType(Material.YELLOW_STAINED_GLASS);
+				block.setData((byte) 4);
 			}
 		});
 

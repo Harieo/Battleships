@@ -102,7 +102,8 @@ public class ShipChoosingGUI extends GUI {
 			mediumIncrement++;
 		}
 
-		ItemStack resetItem = new ItemStack(Material.RED_STAINED_GLASS);
+		ItemStack resetItem = new ItemStack(Material.STAINED_GLASS);
+		resetItem.setDurability((byte) 14);
 		ItemMeta meta = resetItem.getItemMeta();
 		meta.setDisplayName(ChatColor.RED + ChatColor.BOLD.toString() + "Random Ship");
 		meta.setLore(Arrays.asList("",
@@ -141,7 +142,8 @@ public class ShipChoosingGUI extends GUI {
 	 */
 	private ItemStack getSelectItem(Battleship battleship) {
 		boolean isSelected = hasMadeSelection(gamePlayer) && getSelection(gamePlayer).equals(battleship);
-		ItemStack item = new ItemStack(isSelected ? Material.GREEN_STAINED_GLASS : Material.BLUE_STAINED_GLASS);
+		ItemStack item = new ItemStack(Material.STAINED_GLASS);
+		item.setDurability(isSelected ? (byte) 13 : (byte) 11);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(ChatColor.GREEN + ChatColor.BOLD.toString() + "Select the " + battleship.getName());
 		meta.setLore(Arrays.asList("",

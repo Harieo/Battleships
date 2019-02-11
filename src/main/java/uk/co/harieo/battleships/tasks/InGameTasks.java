@@ -41,7 +41,7 @@ public class InGameTasks {
 			}
 		}
 
-		Bukkit.getScheduler().runTaskLater(game, bukkitTask -> taskManager = new RoundTasks(game), 20 * 3);
+		Bukkit.getScheduler().runTaskLater(game, () -> taskManager = new RoundTasks(game), 20 * 3);
 	}
 
 	/**

@@ -181,7 +181,8 @@ public class CoordinateVote {
 	 * @return the created item
 	 */
 	private ItemStack createTargetItem(Coordinate coordinate) {
-		ItemStack item = new ItemStack(Material.YELLOW_TERRACOTTA);
+		ItemStack item = new ItemStack(Material.STAINED_CLAY);
+		item.setDurability((byte) 4);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(ChatColor.YELLOW + ChatColor.BOLD.toString() + "Target: " + coordinate.toString());
 		// We could list how many people are voting but it serves no purpose, only slowing down the GUI
